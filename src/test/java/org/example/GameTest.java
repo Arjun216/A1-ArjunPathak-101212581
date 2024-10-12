@@ -31,4 +31,20 @@ public class GameTest {
         assertEquals(12, questCardsCount, "Event deck should have 12 Quest cards.");
         assertEquals(5, eventCardsCount, "Event deck should have 5 Event cards.");
     }
+
+    @Test
+    @DisplayName("Test to see if game distributes 12 cards to each player")
+    public void RESP_2_test_01() {
+        Game game = new Game();
+        game.setupDecks();
+        game.initializePlayers();
+        game.dealCardsToPlayers();
+
+        for (Player player : game.getPlayers()) {
+            assertEquals(12, player.getHandSize(), "Each player should have 12 cards.");
+        }
+
+        assertEquals(52, game.getAdventureDeck().getTotalCards(),
+                "Adventure deck should have 52 cards remaining after dealing.");
+    }
 }

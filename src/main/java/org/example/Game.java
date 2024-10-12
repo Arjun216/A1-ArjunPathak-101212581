@@ -1,9 +1,13 @@
 package org.example;
 
+import java.util.List;
+
 public class Game {
     private Deck adventureDeck;
     private Deck eventDeck;
+    private List<Player> players;
 
+    //RESP-01
     public void setupDecks() {
         adventureDeck = new Deck();
         eventDeck = new Deck();
@@ -18,5 +22,18 @@ public class Game {
 
     public Deck getEventDeck() {
         return eventDeck;
+    }
+
+    // RESP-02
+    public void initializePlayers() {
+
+    }
+
+    public void dealCardsToPlayers(){
+
+    }
+
+    public List<Player> getPlayers(){
+        return null;
     }
 }
