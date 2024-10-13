@@ -266,7 +266,7 @@ public class GameTest {
         Player player = game.getPlayers().get(0);
 
         // Simulate player having more than 12 cards
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 14; i++) {
             Card card = game.getAdventureDeck().drawCard();
             player.addCardToHand(card);
         }
@@ -277,8 +277,9 @@ public class GameTest {
         String input = "13\n12\n11\n";
         InputStream stdin = System.in;
         System.setIn(new ByteArrayInputStream(input.getBytes()));
+        Scanner scanner = new Scanner(new ByteArrayInputStream(input.getBytes()));
 
-        game.trimPlayerHand(player);
+        game.trimPlayerHand(player, scanner);
 
         // Restore original System.in
         System.setIn(stdin);
