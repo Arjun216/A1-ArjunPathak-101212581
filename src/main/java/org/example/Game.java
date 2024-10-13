@@ -160,9 +160,10 @@ public class Game {
     }
 
     public List<EventCard> getEventDiscardPile() {
-        return null;
+        return eventDiscardPile;
     }
 
     public void endTurn() {
+        advanceTurn();
     }
 }
