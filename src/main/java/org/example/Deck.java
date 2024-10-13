@@ -22,4 +22,8 @@ public class Deck {
         }
         return result;
     }
+    public Card drawCard() {
+        return cards.remove(0);
+    }
+
 }

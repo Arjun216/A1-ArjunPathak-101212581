@@ -1,5 +1,6 @@
 package org.example;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Game {
@@ -26,14 +27,22 @@ public class Game {
 
     // RESP-02
     public void initializePlayers() {
-
+        players = new ArrayList<>();
+        for (int i = 1; i <= 4; i++) {
+            players.add(new Player("P" + i));
+        }
     }
 
-    public void dealCardsToPlayers(){
-
+    public void dealCardsToPlayers() {
+        for (Player player : players) {
+            for (int i = 0; i < 12; i++) {
+                Card card = adventureDeck.drawCard();
+                player.addCardToHand(card);
+            }
+        }
     }
 
-    public List<Player> getPlayers(){
-        return null;
+    public List<Player> getPlayers() {
+        return players;
     }
 }
