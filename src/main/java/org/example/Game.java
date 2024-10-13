@@ -121,4 +121,41 @@ public class Game {
     public void setEventDeck(Deck deck) {
         this.eventDeck = deck;
     }
+
+    public void handleEventCard(EventCard eventCard, Player currentPlayer) {
+        String eventName = eventCard.getEventName();
+        switch (eventName) {
+            case "Plague":
+                int shieldsLost = Math.min(2, currentPlayer.getShields());
+                currentPlayer.addShields(-shieldsLost);
+                break;
+            case "Queen's Favor":
+                for (int i = 0; i < 2; i++) {
+                    Card card = adventureDeck.drawCard();
+                    currentPlayer.addCardToHand(card);
+                }
+                if (currentPlayer.getHandSize() > 12) {
+                    trimPlayerHand(currentPlayer);
+                }
+                break;
+            case "Prosperity":
+                for (Player player : players) {
+                    for (int i = 0; i < 2; i++) {
+                        Card card = adventureDeck.drawCard();
+                        player.addCardToHand(card);
+                    }
+                    if (player.getHandSize() > 12) {
+                        trimPlayerHand(player);
+                    }
+                }
+                break;
+            default:
+
+        }
+        eventDiscardPile.add(eventCard); // Add to discard pile
+    }
+
+    private void trimPlayerHand(Player player) {
+
+    }
 }

@@ -36,4 +36,10 @@ public class Player {
     public void addShields(int number) {
         shields += number;
     }
+    public void discardExcessCards(int number) {
+        for (int i = 0; i < number; i++) {
+            Card discardedCard = hand.remove(hand.size() - 1); // Remove last card
+        }
+    }
+
 }
