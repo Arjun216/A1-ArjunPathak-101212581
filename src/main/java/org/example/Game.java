@@ -157,7 +157,7 @@ public class Game {
         eventDiscardPile.add(eventCard); // Add to discard pile
     }
 
-    private void trimPlayerHand(Player player) {
+    void trimPlayerHand(Player player) {
 
     }
 

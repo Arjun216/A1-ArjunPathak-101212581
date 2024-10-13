@@ -2,7 +2,9 @@ package org.example;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.*;
 
@@ -252,6 +254,36 @@ public class GameTest {
         // Since we already have a test for displaying winners (RESP-5), we can assume it works
         // For this test, we can check if the game recognizes that the game should end
         assertTrue(game.isGameOver(), "Game should be over if a player has 7 or more shields.");
+    }
+
+    @Test
+    @DisplayName("Test if hand is being trimmed properly")
+    public void RESP_11_test_01() {
+        Game game = new Game();
+        game.setupDecks();
+        game.initializePlayers();
+
+        Player player = game.getPlayers().get(0);
+
+        // Simulate player having more than 12 cards
+        for (int i = 0; i < 5; i++) {
+            Card card = game.getAdventureDeck().drawCard();
+            player.addCardToHand(card);
+        }
+
+        assertTrue(player.getHandSize() > 12, "Player should have more than 12 cards.");
+
+        // Simulate player input to discard cards (e.g., discard positions 13,12,11)
+        String input = "13\n12\n11\n";
+        InputStream stdin = System.in;
+        System.setIn(new ByteArrayInputStream(input.getBytes()));
+
+        game.trimPlayerHand(player);
+
+        // Restore original System.in
+        System.setIn(stdin);
+
+        assertEquals(12, player.getHandSize(), "Player's hand should be trimmed to 12 cards.");
     }
 
 }
