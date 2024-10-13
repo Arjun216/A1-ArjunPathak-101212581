@@ -45,4 +45,15 @@ public class Game {
     public List<Player> getPlayers() {
         return players;
     }
+
+    public void initializeTurnOrder() {
+
+    }
+
+    public Player getCurrentPlayer() {
+        return null;
+    }
+
+    public void advanceTurn() {
+    }
 }

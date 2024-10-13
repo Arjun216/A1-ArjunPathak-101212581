@@ -47,4 +47,18 @@ public class GameTest {
         assertEquals(52, game.getAdventureDeck().getTotalCards(),
                 "Adventure deck should have 52 cards remaining after dealing.");
     }
+    @Test
+    @DisplayName("Check if the game is initialized with player 1 and when turn is advanced it moves to player2")
+    public void RESP_3_test_01() {
+        Game game = new Game();
+        game.setupDecks();
+        game.initializePlayers();
+        game.dealCardsToPlayers();
+        game.initializeTurnOrder();
+        Player currentPlayer = game.getCurrentPlayer();
+        assertEquals("P1", currentPlayer.getId(), "The current player should be P1.");
+        game.advanceTurn();
+        assertEquals("P2", currentPlayer.getId(), "The current player should be P2.");
+
+    }
 }
