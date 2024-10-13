@@ -10,4 +10,5 @@ public abstract class Card {
     protected void setType(String type) {
         this.type = type;
     }
+
 }

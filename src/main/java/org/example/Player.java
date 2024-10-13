@@ -43,6 +43,8 @@ public class Player {
     }
 
     public void displayHand() {
+        hand.sort(new CardComparator());
+        System.out.println("Your Hand:");
         int index = 1;
         for (Card card : hand) {
             System.out.println(index + ": " + card.getType());
