@@ -13,7 +13,7 @@ public class Game {
 
     private List<Player> players;
     private int currentPlayerIndex;
-    private boolean gameOver;
+    private boolean gameOver = false;
     private boolean sponsorshipOffered;
 
     //RESP-01
@@ -183,6 +183,6 @@ public class Game {
     }
 
     public boolean isGameOver() {
-        return false;
+        return gameOver;
     }
 }
