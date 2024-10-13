@@ -4,9 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -132,5 +130,70 @@ public class GameTest {
         assertEquals("Test Event", eventCard.getEventName(), "The event card drawn should be 'Test Event'.");
     }
 
+    @Test
+    @DisplayName("Handle Plague event when the current player loses 2 shields")
+    public void RESP_7_test_01() {
+        Game game = new Game();
+        game.setupDecks();
+        game.initializePlayers();
+        game.dealCardsToPlayers();
+        game.initializeTurnOrder();
 
+        Player currentPlayer = game.getCurrentPlayer();
+        currentPlayer.addShields(1);
+
+        EventCard plagueCard = new EventCard("Plague");
+        game.handleEventCard(plagueCard, currentPlayer);
+
+        assertEquals(0, currentPlayer.getShields(), "Player's shields should drop to zero.");
+    }
+
+    @Test
+    @DisplayName("Handle Queen's Favor event where the current player draws 2 adventure cards")
+    public void RESP_7_test_02() {
+        Game game = new Game();
+        game.setupDecks();
+        game.initializePlayers();
+
+        Player currentPlayer = game.getPlayers().get(0);
+
+        // Simulate a smaller initial hand size
+        for (int i = 0; i < 9; i++) {
+            currentPlayer.addCardToHand(game.getAdventureDeck().drawCard());
+        }
+        int initialHandSize = currentPlayer.getHandSize();
+        assertEquals(9, initialHandSize, "Initial hand size should be 9.");
+
+        EventCard queensFavorCard = new EventCard("Queen's Favor");
+        game.handleEventCard(queensFavorCard, currentPlayer);
+
+        assertEquals(11, currentPlayer.getHandSize(), "Current player should have drawn 2 adventure cards.");
+    }
+
+    @Test
+    @DisplayName(" Handle Prosperity event where all players draw 2 adventure cards")
+    public void RESP_7_test_03() {
+        Game game = new Game();
+        game.setupDecks();
+        game.initializePlayers();
+
+        for (Player player : game.getPlayers()) {
+            for (int i = 0; i < 9; i++) {
+                Card card = game.getAdventureDeck().drawCard();
+                player.addCardToHand(card);
+            }
+            int initialHandSize = player.getHandSize();
+            assertEquals(9, initialHandSize, "Player " + player.getId() + " should have an initial hand size of 9.");
+        }
+
+        EventCard prosperityCard = new EventCard("Prosperity");
+        game.handleEventCard(prosperityCard, null);
+
+        // After drawing 2 cards, each player's hand size should now be 11 (9 + 2)
+        for (Player player : game.getPlayers()) {
+            int expectedHandSize = 11;
+            int actualHandSize = player.getHandSize();
+            assertEquals(expectedHandSize, actualHandSize, "Player " + player.getId() + " should have a hand size of 11 after the Prosperity event.");
+        }
+    }
 }
