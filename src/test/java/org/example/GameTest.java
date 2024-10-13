@@ -233,4 +233,25 @@ public class GameTest {
         assertTrue(game.isSponsorshipOffered(), "Sponsorship should be offered to players.");
     }
 
+    @Test
+    @DisplayName("Check for Winners after each turn")
+    public void RESP_10_test_01() {
+        Game game = new Game();
+        game.setupDecks();
+        game.initializePlayers();
+        game.dealCardsToPlayers();
+
+        Player player1 = game.getPlayers().get(0);
+        Player player2 = game.getPlayers().get(1);
+
+        player1.addShields(6);
+        player2.addShields(7);
+
+        game.checkForWinners();
+
+        // Since we already have a test for displaying winners (RESP-5), we can assume it works
+        // For this test, we can check if the game recognizes that the game should end
+        assertTrue(game.isGameOver(), "Game should be over if a player has 7 or more shields.");
+    }
+
 }

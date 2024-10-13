@@ -171,14 +171,18 @@ public class Game {
 
     public void handleQuestCard(QuestCard questCard) {
         System.out.println("Quest card drawn with " + questCard.getStages() + " stages.");
-        offerSponsorship(questCard);
+        offerSponsorship();
     }
 
-    public void offerSponsorship(QuestCard questCard) {
+    public void offerSponsorship() {
         sponsorshipOffered = true;
     }
 
     public boolean isSponsorshipOffered() {
         return sponsorshipOffered;
+    }
+
+    public boolean isGameOver() {
+        return false;
     }
 }
