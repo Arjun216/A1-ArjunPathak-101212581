@@ -23,7 +23,10 @@ public class Deck {
         return result;
     }
     public Card drawCard() {
-        return cards.remove(0);
+        if (cards.isEmpty()) {
+            return null;
+        }
+        return cards.removeFirst();
     }
 
 }
