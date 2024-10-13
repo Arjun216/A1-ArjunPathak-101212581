@@ -192,10 +192,15 @@ public class Game {
 
     public void handleQuestCard(QuestCard questCard) {
         System.out.println("Quest card drawn with " + questCard.getStages() + " stages.");
-        offerSponsorship();
+        offerSponsorship(questCard);
     }
 
-    public void offerSponsorship() {
+    public void offerSponsorship(QuestCard questCard) {
+        Scanner scanner = new Scanner(System.in);
+        offerSponsorship(questCard, scanner);
+    }
+
+    public void offerSponsorship(QuestCard questCard, Scanner scanner) {
         sponsorshipOffered = true;
     }
 
@@ -205,5 +210,9 @@ public class Game {
 
     public boolean isGameOver() {
         return gameOver;
+    }
+
+    public Player getSponsor() {
+        return null;
     }
 }

@@ -286,5 +286,30 @@ public class GameTest {
 
         assertEquals(12, player.getHandSize(), "Player's hand should be trimmed to 12 cards.");
     }
+    @Test
+    @DisplayName("Game offers quest sponsorship to players in order")
+    public void RESP_13_test_01() {
+        Game game = new Game();
+        game.setupDecks();
+        game.initializePlayers();
+        game.initializeTurnOrder();
 
+        QuestCard questCard = new QuestCard(3);
+        game.handleQuestCard(questCard);
+
+        // Simulate players' responses: P1 declines, P2 accepts
+        String input = "no\nyes\n";
+        InputStream stdin = System.in;
+        System.setIn(new ByteArrayInputStream(input.getBytes()));
+        Scanner scanner = new Scanner(new ByteArrayInputStream(input.getBytes()));
+
+
+        game.offerSponsorship(questCard, scanner);
+
+        // Restore original System.in
+        System.setIn(stdin);
+
+        // Verify that P2 is the sponsor
+        assertEquals("P2", game.getSponsor().getId(), "Player P2 should be the sponsor.");
+    }
 }
