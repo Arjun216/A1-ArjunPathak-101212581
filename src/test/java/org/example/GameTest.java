@@ -4,6 +4,9 @@ import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -51,6 +54,7 @@ public class GameTest {
         assertEquals(52, game.getAdventureDeck().getTotalCards(),
                 "Adventure deck should have 52 cards remaining after dealing.");
     }
+
     @Test
     @DisplayName("Check if the game is initialized with player 1")
     public void RESP_3_test_01() {
@@ -82,7 +86,7 @@ public class GameTest {
 
     @Test
     @DisplayName("Display the winning name and check if the game terminates correctly")
-    public void RESP_5_test_01(){
+    public void RESP_5_test_01() {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         PrintStream originalOut = System.out;
         System.setOut(new PrintStream(outputStream));
@@ -102,16 +106,31 @@ public class GameTest {
     }
 
     @Test
-    @DisplayName("Display the IDs of the winner")
     public void RESP_6_test_01() {
         Game game = new Game();
         game.setupDecks();
         game.initializePlayers();
-        game.dealCardsToPlayers();
         game.initializeTurnOrder();
 
+        // Create a known EventCard
+        EventCard testEventCard = new EventCard("Test Event");
+
+        // Create a deck with only the test EventCard
+        List<Card> testEventDeckCards = new ArrayList<>();
+        testEventDeckCards.add(testEventCard);
+        Deck testEventDeck = new Deck(testEventDeckCards);
+
+        game.setEventDeck(testEventDeck);
+
         Player currentPlayer = game.getCurrentPlayer();
-        EventCard eventCard = game.drawEventCard(currentPlayer);
-        assertNotNull(eventCard, "An event card should be drawn.");
+        Card drawnCard = game.drawEventCard(currentPlayer);
+
+        // Ensure an event card is drawn
+        assertNotNull(drawnCard, "An event card should be drawn.");
+        assertTrue(drawnCard instanceof EventCard, "The drawn card should be an EventCard.");
+        EventCard eventCard = (EventCard) drawnCard;
+        assertEquals("Test Event", eventCard.getEventName(), "The event card drawn should be 'Test Event'.");
     }
+
+
 }

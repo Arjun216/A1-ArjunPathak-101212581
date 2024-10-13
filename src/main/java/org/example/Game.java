@@ -117,4 +117,8 @@ public class Game {
         }
         System.out.println("Game over!");
     }
+
+    public void setEventDeck(Deck deck) {
+        this.eventDeck = deck;
+    }
 }

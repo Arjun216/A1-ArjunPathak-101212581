@@ -7,6 +7,18 @@ public class Deck {
     private List<Card> cards = new ArrayList<>();
     private List<Card> discardPile = new ArrayList<>();
 
+    // Default constructor
+    public Deck() {
+        this.cards = new ArrayList<>();
+        this.discardPile = new ArrayList<>();
+    }
+
+    // Constructor that accepts a list of cards
+    public Deck(List<Card> cards) {
+        this.cards = cards;
+        this.discardPile = new ArrayList<>();
+    }
+
     public void addCards(List<Card> newCards) {
         cards.addAll(newCards);
     }
