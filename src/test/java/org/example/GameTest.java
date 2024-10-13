@@ -229,8 +229,12 @@ public class GameTest {
         game.dealCardsToPlayers();
         game.initializeTurnOrder();
 
+        String input = "no\nyes\n";
+        InputStream stdin = System.in;
+        System.setIn(new ByteArrayInputStream(input.getBytes()));
+        Scanner scanner = new Scanner(new ByteArrayInputStream(input.getBytes()));
         QuestCard questCard = new QuestCard(3); // Quest with 3 stages
-        game.handleQuestCard(questCard);
+        game.handleQuestCard(questCard, scanner);
 
         assertTrue(game.isSponsorshipOffered(), "Sponsorship should be offered to players.");
     }
@@ -294,17 +298,15 @@ public class GameTest {
         game.initializePlayers();
         game.initializeTurnOrder();
 
-        QuestCard questCard = new QuestCard(3);
-        game.handleQuestCard(questCard);
-
         // Simulate players' responses: P1 declines, P2 accepts
         String input = "no\nyes\n";
         InputStream stdin = System.in;
         System.setIn(new ByteArrayInputStream(input.getBytes()));
         Scanner scanner = new Scanner(new ByteArrayInputStream(input.getBytes()));
 
+        QuestCard questCard = new QuestCard(3);
+        game.handleQuestCard(questCard, scanner);
 
-        game.offerSponsorship(questCard, scanner);
 
         // Restore original System.in
         System.setIn(stdin);

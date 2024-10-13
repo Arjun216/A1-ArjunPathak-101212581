@@ -9,14 +9,14 @@ public class Game {
     private Deck eventDeck;
 
     private List<Card> adventureDiscardPile = new ArrayList<>();
-    private List<EventCard> eventDiscardPile = new ArrayList<>();
+    private List<Card> eventDiscardPile = new ArrayList<>();
 
 
     private List<Player> players;
     private int currentPlayerIndex;
     private boolean gameOver = false;
     private boolean sponsorshipOffered;
-    private Scanner scanner = new Scanner(System.in);
+    private Player sponsor;
 
     //RESP-01
     public void setupDecks() {
@@ -182,7 +182,7 @@ public class Game {
         }
     }
 
-    public List<EventCard> getEventDiscardPile() {
+    public List<Card> getEventDiscardPile() {
         return eventDiscardPile;
     }
 
@@ -192,16 +192,54 @@ public class Game {
 
     public void handleQuestCard(QuestCard questCard) {
         System.out.println("Quest card drawn with " + questCard.getStages() + " stages.");
-        offerSponsorship(questCard);
-    }
-
-    public void offerSponsorship(QuestCard questCard) {
         Scanner scanner = new Scanner(System.in);
         offerSponsorship(questCard, scanner);
     }
+    public void handleQuestCard(QuestCard questCard, Scanner scanner) {
+        System.out.println("Quest card drawn with " + questCard.getStages() + " stages.");
+        offerSponsorship(questCard, scanner);
+    }
+
 
     public void offerSponsorship(QuestCard questCard, Scanner scanner) {
         sponsorshipOffered = true;
+        int index = currentPlayerIndex;
+        int attempts = 0;
+        sponsor = null;
+
+        while (attempts < players.size()) {
+            Player player = players.get(index);
+            if (askForSponsorship(player, scanner)) {
+                sponsor = player;
+                System.out.println(player.getId() + " is the sponsor for this quest.");
+                break;
+            }
+            index = (index + 1) % players.size();
+            attempts++;
+        }
+
+        if (sponsor == null) {
+            System.out.println("No sponsor found. The quest is discarded.");
+            eventDiscardPile.add(questCard);
+            // End current player's turn
+            endTurn();
+        } else {
+            // Proceed to UC-05: Sponsor sets up the quest
+        }
+    }
+
+    private boolean askForSponsorship(Player player, Scanner scanner) {
+        System.out.println(player.getId() + ", do you want to sponsor the quest? (yes/no)");
+        String response = scanner.nextLine().trim().toLowerCase();
+        while (!response.equals("yes") && !response.equals("no")) {
+            System.out.println("Invalid response. Please enter 'yes' or 'no'.");
+            response = scanner.nextLine().trim().toLowerCase();
+        }
+        return response.equals("yes");
+    }
+
+    public Player getSponsor() {
+        return sponsor;
     }
 
     public boolean isSponsorshipOffered() {
@@ -210,9 +248,5 @@ public class Game {
 
     public boolean isGameOver() {
         return gameOver;
-    }
-
-    public Player getSponsor() {
-        return null;
     }
 }
