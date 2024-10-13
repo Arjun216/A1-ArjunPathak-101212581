@@ -60,6 +60,6 @@ public class Game {
     }
 
     public void playTurn() {
-
+        Player player = getCurrentPlayer();
     }
 }
