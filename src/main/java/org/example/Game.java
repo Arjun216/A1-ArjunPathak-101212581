@@ -14,6 +14,7 @@ public class Game {
     private List<Player> players;
     private int currentPlayerIndex;
     private boolean gameOver;
+    private boolean sponsorshipOffered;
 
     //RESP-01
     public void setupDecks() {
@@ -70,6 +71,7 @@ public class Game {
         drawEventCard(player);
 
     }
+
     public void checkForWinners() {
         List<Player> winners = new ArrayList<>();
         for (Player player : players) {
@@ -168,9 +170,15 @@ public class Game {
     }
 
     public void handleQuestCard(QuestCard questCard) {
+        System.out.println("Quest card drawn with " + questCard.getStages() + " stages.");
+        offerSponsorship(questCard);
+    }
+
+    public void offerSponsorship(QuestCard questCard) {
+        sponsorshipOffered = true;
     }
 
     public boolean isSponsorshipOffered() {
-        return false;
+        return sponsorshipOffered;
     }
 }
