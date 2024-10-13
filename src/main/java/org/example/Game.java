@@ -7,6 +7,7 @@ public class Game {
     private Deck adventureDeck;
     private Deck eventDeck;
     private List<Player> players;
+    private int currentPlayerIndex;
 
     //RESP-01
     public void setupDecks() {
@@ -47,13 +48,14 @@ public class Game {
     }
 
     public void initializeTurnOrder() {
-
+        currentPlayerIndex = 0;
     }
 
     public Player getCurrentPlayer() {
-        return null;
+        return players.get(currentPlayerIndex);
     }
 
     public void advanceTurn() {
+        currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
     }
 }
