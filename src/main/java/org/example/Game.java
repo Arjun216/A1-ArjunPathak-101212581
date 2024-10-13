@@ -67,6 +67,8 @@ public class Game {
 
     public void playTurn() {
         Player player = getCurrentPlayer();
+        drawEventCard(player);
+
     }
     public void checkForWinners() {
         List<Player> winners = new ArrayList<>();
