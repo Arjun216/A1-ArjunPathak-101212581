@@ -8,6 +8,7 @@ public class Game {
     private Deck eventDeck;
     private List<Player> players;
     private int currentPlayerIndex;
+    private boolean gameOver;
 
     //RESP-01
     public void setupDecks() {
@@ -62,7 +63,38 @@ public class Game {
     public void playTurn() {
         Player player = getCurrentPlayer();
     }
-    public void checkForWinners(){
+    public void checkForWinners() {
+        List<Player> winners = new ArrayList<>();
+        for (Player player : players) {
+            if (player.getShields() >= 7) {
+                winners.add(player);
+            }
+        }
+        if (!winners.isEmpty()) {
+            displayWinners(winners);
+            gameOver = true;
+        }
+    }
 
+    private void displayWinners(List<Player> winners) {
+        System.out.print("Winner: ");
+        for (int i = 0; i < winners.size(); i++) {
+            System.out.print(winners.get(i).getId());
+            if (i < winners.size() - 1) {
+                System.out.print(", ");
+            }
+        }
+    }
+
+    // Main game loop
+    public void startGame() {
+        initializeTurnOrder();
+        while (!gameOver) {
+            playTurn();
+            if (!gameOver) {
+                advanceTurn();
+            }
+        }
+        System.out.println("Game over!");
     }
 }
