@@ -58,4 +58,8 @@ public class Game {
     public void advanceTurn() {
         currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
     }
+
+    public void playTurn() {
+
+    }
 }
