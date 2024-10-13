@@ -8,7 +8,7 @@ public class Game {
     private Deck eventDeck;
 
     private List<Card> adventureDiscardPile = new ArrayList<>();
-    private List<Card> eventDiscardPile = new ArrayList<>();
+    private List<EventCard> eventDiscardPile = new ArrayList<>();
 
 
     private List<Player> players;
@@ -157,5 +157,12 @@ public class Game {
 
     private void trimPlayerHand(Player player) {
 
+    }
+
+    public List<EventCard> getEventDiscardPile() {
+        return null;
+    }
+
+    public void endTurn() {
     }
 }

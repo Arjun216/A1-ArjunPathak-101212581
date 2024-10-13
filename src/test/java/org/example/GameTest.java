@@ -196,4 +196,26 @@ public class GameTest {
             assertEquals(expectedHandSize, actualHandSize, "Player " + player.getId() + " should have a hand size of 11 after the Prosperity event.");
         }
     }
+
+
+    @Test
+    @DisplayName("Check that the event card is in the discard pile")
+    public void RESP_8_test_01() {
+        Game game = new Game();
+        game.setupDecks();
+        game.initializePlayers();
+        game.dealCardsToPlayers();
+        game.initializeTurnOrder();
+
+        Player currentPlayer = game.getCurrentPlayer();
+        EventCard eventCard = new EventCard("Plague");
+        game.handleEventCard(eventCard, currentPlayer);
+
+        assertTrue(game.getEventDiscardPile().contains(eventCard), "Event card should be in the discard pile.");
+        game.endTurn(); // End the current Players turn
+
+        Player nextPlayer = game.getCurrentPlayer();  // Verify that the next player is now the current player
+        assertNotEquals(currentPlayer.getId(), nextPlayer.getId(), "It should be the next player's turn.");
+    }
+
 }
