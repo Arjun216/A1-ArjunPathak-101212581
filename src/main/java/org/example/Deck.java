@@ -1,9 +1,11 @@
 package org.example;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Deck {
     private List<Card> cards = new ArrayList<>();
+    private List<Card> discardPile = new ArrayList<>();
 
     public void addCards(List<Card> newCards) {
         cards.addAll(newCards);
@@ -24,9 +26,21 @@ public class Deck {
     }
     public Card drawCard() {
         if (cards.isEmpty()) {
+            reshuffleDiscardPile();
+        }
+        if (cards.isEmpty()) {
             return null;
         }
-        return cards.removeFirst();
+        return cards.remove(0);
+    }
+
+    private void reshuffleDiscardPile() {
+        if (!discardPile.isEmpty()) {
+            cards.addAll(discardPile);
+            discardPile.clear();
+            Collections.shuffle(cards);
+            System.out.println("Deck reshuffled from discard pile.");
+        }
     }
 
 }

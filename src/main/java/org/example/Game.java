@@ -6,6 +6,11 @@ import java.util.List;
 public class Game {
     private Deck adventureDeck;
     private Deck eventDeck;
+
+    private List<Card> adventureDiscardPile = new ArrayList<>();
+    private List<Card> eventDiscardPile = new ArrayList<>();
+
+
     private List<Player> players;
     private int currentPlayerIndex;
     private boolean gameOver;
@@ -87,7 +92,16 @@ public class Game {
     }
 
     public EventCard drawEventCard(Player player) {
-        return null;
+        Card card = eventDeck.drawCard();
+        if (card instanceof EventCard eventCard) {
+            System.out.println("Player " + player.getId() + " drew event card: " + eventCard.getEventName());
+            return eventCard;
+        } else if (card instanceof QuestCard questCard) {
+            System.out.println("Player " + player.getId() + " drew quest card with " + questCard.getStages() + " stages.");
+            return null; // to return something in RESP9
+        } else {
+            return null;
+        }
     }
 
     // Main game loop
