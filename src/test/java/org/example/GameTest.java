@@ -100,4 +100,18 @@ public class GameTest {
         String output = outputStream.toString().trim();
         assertEquals("Winner: P1", output, "Game should display the winner's ID and terminate.");
     }
+
+    @Test
+    @DisplayName("Display the IDs of the winner")
+    public void RESP_6_test_01() {
+        Game game = new Game();
+        game.setupDecks();
+        game.initializePlayers();
+        game.dealCardsToPlayers();
+        game.initializeTurnOrder();
+
+        Player currentPlayer = game.getCurrentPlayer();
+        EventCard eventCard = game.drawEventCard(currentPlayer);
+        assertNotNull(eventCard, "An event card should be drawn.");
+    }
 }

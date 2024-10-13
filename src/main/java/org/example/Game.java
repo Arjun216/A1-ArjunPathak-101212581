@@ -86,6 +86,10 @@ public class Game {
         }
     }
 
+    public EventCard drawEventCard(Player player) {
+        return null;
+    }
+
     // Main game loop
     public void startGame() {
         initializeTurnOrder();
