@@ -218,4 +218,19 @@ public class GameTest {
         assertNotEquals(currentPlayer.getId(), nextPlayer.getId(), "It should be the next player's turn.");
     }
 
+    @Test
+    @DisplayName("Game handles drawing a quest card")
+    public void RESP_9_test_DrawQuestCard() {
+        Game game = new Game();
+        game.setupDecks();
+        game.initializePlayers();
+        game.dealCardsToPlayers();
+        game.initializeTurnOrder();
+
+        QuestCard questCard = new QuestCard(3); // Quest with 3 stages
+        game.handleQuestCard(questCard);
+
+        assertTrue(game.isSponsorshipOffered(), "Sponsorship should be offered to players.");
+    }
+
 }

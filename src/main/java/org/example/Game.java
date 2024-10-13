@@ -166,4 +166,11 @@ public class Game {
     public void endTurn() {
         advanceTurn();
     }
+
+    public void handleQuestCard(QuestCard questCard) {
+    }
+
+    public boolean isSponsorshipOffered() {
+        return false;
+    }
 }
