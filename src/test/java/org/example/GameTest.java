@@ -1,6 +1,10 @@
 package org.example;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class GameTest {
@@ -74,5 +78,26 @@ public class GameTest {
         game.advanceTurn();
         Player currentPlayer = game.getCurrentPlayer();
         assertEquals("P3", currentPlayer.getId(), "The current player should be P3.");
+    }
+
+    @Test
+    @DisplayName("Display the winning name and check if the game terminates correctly")
+    public void RESP_5_test_01(){
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        PrintStream originalOut = System.out;
+        System.setOut(new PrintStream(outputStream));
+
+        Game game = new Game();
+        game.setupDecks();
+        game.initializePlayers();
+        game.dealCardsToPlayers();
+        Player player1 = game.getPlayers().get(0);
+        player1.addShields(7);
+
+        game.checkForWinners();
+
+        System.setOut(originalOut);
+        String output = outputStream.toString().trim();
+        assertEquals("Winner: P1", output, "Game should display the winner's ID and terminate.");
     }
 }
