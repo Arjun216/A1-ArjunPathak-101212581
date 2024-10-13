@@ -42,4 +42,16 @@ public class Player {
         }
     }
 
+    public void displayHand() {
+        int index = 1;
+        for (Card card : hand) {
+            System.out.println(index + ": " + card.getType());
+            index++;
+        }
+    }
+
+    public Card discardCard(int index) {
+        return hand.remove(index);
+    }
+
 }

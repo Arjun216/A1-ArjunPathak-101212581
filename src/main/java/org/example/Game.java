@@ -2,6 +2,7 @@ package org.example;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class Game {
     private Deck adventureDeck;
@@ -15,6 +16,7 @@ public class Game {
     private int currentPlayerIndex;
     private boolean gameOver = false;
     private boolean sponsorshipOffered;
+    private Scanner scanner = new Scanner(System.in);
 
     //RESP-01
     public void setupDecks() {
@@ -157,8 +159,27 @@ public class Game {
         eventDiscardPile.add(eventCard); // Add to discard pile
     }
 
-    void trimPlayerHand(Player player) {
+    public void trimPlayerHand(Player player) {
+        Scanner scanner = new Scanner(System.in);
+        trimPlayerHand(player, scanner);
+    }
 
+    void trimPlayerHand(Player player, Scanner scanner) {
+        int excessCards = player.getHandSize() - 12;
+        System.out.println("You have " + player.getHandSize() + " cards. Please discard " + excessCards + " card(s).");
+
+        for (int i = 0; i < excessCards; i++) {
+            System.out.println("Your hand:");
+            player.displayHand();
+
+            System.out.print("Enter the position of the card to discard: ");
+            int position = scanner.nextInt();
+            while (position < 1 || position > player.getHandSize()) {
+                System.out.println("Invalid position. Please try again.");
+                position = scanner.nextInt();
+            }
+            Card discardedCard = player.discardCard(position - 1);
+        }
     }
 
     public List<EventCard> getEventDiscardPile() {
