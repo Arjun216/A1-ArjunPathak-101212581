@@ -297,4 +297,10 @@ public class Game {
     public List<Player> getStageParticipants() {
         return stageParticipants;
     }
+    public void AddStageParticipants(Player player){
+        
+    }
+
+    public void handleParticipantsDrawingAndTrimming() {
+    }
 }

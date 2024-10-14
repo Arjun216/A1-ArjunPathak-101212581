@@ -361,4 +361,33 @@ public class GameTest {
         assertTrue(participants.contains(game.getPlayers().get(3)), "P4 should be participating.");
     }
 
+    @Test
+    @DisplayName("Participants Draw Cards and Trim Hand if Necessary")
+    public void RESP_18_test_01() {
+        Game game = new Game();
+        game.setupDecks();
+        game.initializePlayers();
+
+        Player participant1 = game.getPlayers().get(1);
+        Player participant2 = game.getPlayers().get(3);
+
+        game.AddStageParticipants(participant1);
+        game.AddStageParticipants(participant2);
+
+        assertEquals(12, participant1.getHandSize(), "Participant 1 should start with 12 cards.");
+        assertEquals(12, participant2.getHandSize(), "Participant 2 should start with 12 cards.");
+
+        participant1.addCardToHand(game.getAdventureDeck().drawCard());
+        participant2.addCardToHand(game.getAdventureDeck().drawCard());
+
+        assertEquals(13, participant1.getHandSize(), "Participant 1 should have 13 cards after drawing.");
+        assertEquals(13, participant2.getHandSize(), "Participant 2 should have 13 cards after drawing.");
+
+        game.handleParticipantsDrawingAndTrimming();
+
+        assertEquals(12, participant1.getHandSize(), "Participant 1 should have 12 cards after trimming.");
+        assertEquals(12, participant2.getHandSize(), "Participant 2 should have 12 cards after trimming.");
+    }
+
+
 }
