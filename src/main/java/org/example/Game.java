@@ -18,6 +18,8 @@ public class Game {
     private boolean gameOver = false;
     private boolean sponsorshipOffered;
     private Player sponsor;
+
+
     private List<Player> eligibleParticipants = new ArrayList<>();
     private List<Player> stageParticipants = new ArrayList<>();
 
@@ -316,4 +318,6 @@ public class Game {
         }
     }
 
+    public void resolveStage(int stageValue) {
+    }
 }

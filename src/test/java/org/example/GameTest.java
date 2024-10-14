@@ -157,7 +157,7 @@ public class GameTest {
         game.setupDecks();
         game.initializePlayers();
 
-        Player currentPlayer = game.getPlayers().get(0);
+        Player currentPlayer = game.getPlayers().getFirst();
 
         // Simulate a smaller initial hand size
         for (int i = 0; i < 9; i++) {
@@ -267,7 +267,7 @@ public class GameTest {
         game.setupDecks();
         game.initializePlayers();
 
-        Player player = game.getPlayers().get(0);
+        Player player = game.getPlayers().getFirst();
 
         // Simulate player having more than 12 cards
         for (int i = 0; i < 14; i++) {
@@ -322,7 +322,7 @@ public class GameTest {
         game.initializePlayers();
         game.initializeTurnOrder();
 
-        Player sponsor = game.getPlayers().get(0);
+        Player sponsor = game.getPlayers().getFirst();
         game.setSponsor(sponsor);
 
         game.determineEligibleParticipants();
@@ -395,6 +395,34 @@ public class GameTest {
         assertEquals(12, participant2.getHandSize(), "Participant 2 should have 12 cards after trimming.");
     }
 
+    @Test
+    @DisplayName("Resolving the Current Stage")
+    public void RESP_20_test_ResolveStage() {
+        Game game = new Game();
+        game.setupDecks();
+        game.initializePlayers();
 
+        // Simulate participants with prepared attacks
+        Player participant1 = game.getPlayers().get(1);
+        Player participant2 = game.getPlayers().get(3);
+
+        participant1.setAttackValue(25);
+        participant2.setAttackValue(15);
+
+        game.AddStageParticipants(participant1);
+        game.AddStageParticipants(participant2);
+
+        game.determineEligibleParticipants();
+        assertTrue(game.getEligibleParticipants().contains(participant1), "Participant 1 should be initially eligible.");
+        assertTrue(game.getEligibleParticipants().contains(participant2), "Participant 2 should be initially eligible.");
+
+        int stageValue = 20;
+
+        game.resolveStage(stageValue);
+
+        // Verify participants' statuses after resolving the stage
+        assertTrue(game.getEligibleParticipants().contains(participant1), "Participant 1 should remain eligible.");
+        assertFalse(game.getEligibleParticipants().contains(participant2), "Participant 2 should be removed from eligible participants.");
+    }
 
 }

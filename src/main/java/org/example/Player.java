@@ -56,4 +56,6 @@ public class Player {
         return hand.remove(index);
     }
 
+    public void setAttackValue(int stageValue) {
+    }
 }
