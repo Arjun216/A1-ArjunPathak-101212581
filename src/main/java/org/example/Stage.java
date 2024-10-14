@@ -1,7 +1,48 @@
 package org.example;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Stage {
+    private List<Card> cards = new ArrayList<>();
+    private List<String> weaponNames = new ArrayList<>();
+    private boolean hasFoe = false;
+
+    public void addCard(Card card) {
+        if (card instanceof FoeCard && !hasFoe) {
+            cards.add(card);
+            hasFoe = true;
+        } else if (card instanceof WeaponCard) {
+            WeaponCard weapon = (WeaponCard) card;
+            if (!weaponNames.contains(weapon.getName())) {
+                cards.add(card);
+                weaponNames.add(weapon.getName());
+            }
+        }
+    }
+
+    public boolean canAddCard(Card card) {
+        if (card instanceof FoeCard) {
+            return !hasFoe;
+        } else if (card instanceof WeaponCard) {
+            WeaponCard weapon = (WeaponCard) card;
+            return !weaponNames.contains(weapon.getName());
+        }
+        return false;
+    }
+
     public int getTotalValue() {
-        return 0;
+        int totalValue = 0;
+        for (Card card : cards) {
+            if (card instanceof FoeCard) {
+                totalValue += ((FoeCard) card).getValue();
+            } else if (card instanceof WeaponCard) {
+                totalValue += ((WeaponCard) card).getValue();
+            }
+        }
+        return totalValue;
+    }
+
+    public boolean isEmpty() {
+        return cards.isEmpty();
     }
 }

@@ -372,9 +372,64 @@ public class Game {
     }
 
     public void sponsorSetsUpQuest(int numStages, Scanner scanner) {
+        System.out.println("Sponsor " + sponsor.getId() + " is setting up the quest with " + numStages + " stages.\n");
+
+        int previousStageValue = 0;
+
+        for (int stageNumber = 1; stageNumber <= numStages; stageNumber++) {
+            Stage stage = new Stage();
+            System.out.println("Setting up Stage " + stageNumber + ":");
+
+            boolean stageComplete = false;
+            while (!stageComplete) {
+                sponsor.displayHand();
+                System.out.print("Enter the position of the card to add to this stage or 'quit' to finish the stage: \n");
+                String input = scanner.nextLine().trim();
+
+                if (input.equalsIgnoreCase("quit")) {
+                    // Validation before completing the stage
+                    if (stage.isEmpty()) {
+                        System.out.println("A stage cannot be empty. Please add at least one Foe card and any desired Weapon cards.\n");
+                    } else if (stage.getTotalValue() <= previousStageValue) {
+                        System.out.println("Stage value must be greater than the value of the previous stage (" + previousStageValue + "). Add more cards or modify the stage.");
+                    } else {
+                        // Successfully complete the current stage
+                        previousStageValue = stage.getTotalValue();
+                        System.out.println("Stage " + stageNumber + " set up with total value: " + previousStageValue);
+                        questStages.add(stage);
+                        stageComplete = true;
+                    }
+                } else {
+                    try {
+                        int position = Integer.parseInt(input);
+                        if (position < 1 || position > sponsor.getHandSize()) {
+                            System.out.println("Invalid position. Please enter a value between 1 and " + sponsor.getHandSize() + ".");
+                        } else {
+                            Card selectedCard = sponsor.getHand().get(position - 1);
+                            if (stage.canAddCard(selectedCard)) {
+                                stage.addCard(selectedCard);
+                                sponsor.removeCardFromHand(position - 1);
+                                System.out.println("Card added to stage.");
+                            } else {
+                                System.out.println("Invalid card selection. Please select a non-repeated weapon or a single foe.");
+                            }
+                        }
+                    } catch (NumberFormatException e) {
+                        System.out.println("Invalid input. Please enter a valid card position or 'quit'.");
+                    }
+                }
+            }
+        }
+
+        // Ensure the correct number of stages were set up
+        if (questStages.size() != numStages) {
+            System.out.println("Warning: Only " + questStages.size() + " stages were successfully set up out of " + numStages + ".");
+        }
     }
 
+
+
     public List<Stage> getQuestStages() {
-        return null;
+        return questStages;
     }
 }

@@ -66,5 +66,10 @@ public class Player {
     }
 
     public void clearHand() {
+        hand.clear();
+    }
+
+    public void removeCardFromHand(int index) {
+        hand.remove(index);
     }
 }
