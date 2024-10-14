@@ -17,6 +17,8 @@ public class Game {
     private boolean gameOver = false;
     private boolean sponsorshipOffered;
     private Player sponsor;
+    private List<Player> eligibleParticipants = new ArrayList<>();
+
 
     //RESP-01
     public void setupDecks() {
@@ -249,14 +251,20 @@ public class Game {
     public boolean isGameOver() {
         return gameOver;
     }
-
-    public void setSponsor(Player sponsor) {
-    }
-
     public void determineEligibleParticipants() {
+        eligibleParticipants.clear();
+        for (Player player : players) {
+            if (!player.equals(sponsor)) {
+                eligibleParticipants.add(player);
+            }
+        }
     }
 
     public List<Player> getEligibleParticipants() {
-        return null;
+        return eligibleParticipants;
+    }
+
+    public void setSponsor(Player sponsor) {
+        this.sponsor = sponsor;
     }
 }
