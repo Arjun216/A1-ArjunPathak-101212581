@@ -354,6 +354,14 @@ public class Game {
     }
 
     public void sponsorDrawsReplacementCards(int cardsUsed, int questStages, Scanner scanner) {
+        for (int i = 0; i < cardsUsed + questStages; i++) {
+            Card card = adventureDeck.drawCard();
+            sponsor.addCardToHand(card);
+        }
+        if (sponsor.getHandSize() > 12) {
+            System.out.println(sponsor.getId() + " has more than 12 cards and needs to trim their hand.");
+            trimPlayerHand(sponsor, scanner);
+        }
 
     }
 }
