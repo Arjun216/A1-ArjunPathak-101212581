@@ -334,10 +334,15 @@ public class Game {
         }
     }
 
-    public void addWinner(Player participant1) {
+    public void addWinner(Player participant) {
+        winners.add(participant);
     }
 
     public void awardShieldsToWinners(int questStages) {
+        for (Player winner : winners) {
+            winner.addShields(questStages);
+            System.out.println(winner.getId() + " receives " + questStages + " shields.");
+        }
     }
 
     public List<Player> getWinners() {
