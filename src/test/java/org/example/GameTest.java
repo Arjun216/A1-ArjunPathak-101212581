@@ -76,13 +76,20 @@ public class GameTest {
         game.initializePlayers();
         game.dealCardsToPlayers();
         game.initializeTurnOrder();
-        game.playTurn(); // P1's turn
-        game.advanceTurn();
-        game.playTurn(); // P2's turn
-        game.advanceTurn();
-        Player currentPlayer = game.getCurrentPlayer();
-        assertEquals("P3", currentPlayer.getId(), "The current player should be P3.");
+
+        // Simulate 'no' responses for sponsorship offers
+        String simulatedInput = "no\nno\nno\nno\n";
+        Scanner simulatedScanner = new Scanner(simulatedInput);
+
+        game.playTurn(simulatedScanner); // P1 plays their turn
+        Player currentPlayerAfterP1 = game.getCurrentPlayer();
+        assertEquals("P2", currentPlayerAfterP1.getId(), "After P1's turn, the current player should be P2.");
+
+        game.playTurn(simulatedScanner); // P2 plays their turn
+        Player currentPlayerAfterP2 = game.getCurrentPlayer();
+        assertEquals("P3", currentPlayerAfterP2.getId(), "After P2's turn, the current player should be P3.");
     }
+
 
     @Test
     @DisplayName("Display the winning name and check if the game terminates correctly")
@@ -95,7 +102,7 @@ public class GameTest {
         game.setupDecks();
         game.initializePlayers();
         game.dealCardsToPlayers();
-        Player player1 = game.getPlayers().getFirst();
+        Player player1 = game.getPlayers().get(0);
         player1.addShields(7);
 
         game.checkForWinners();
@@ -144,7 +151,7 @@ public class GameTest {
         currentPlayer.addShields(1);
 
         EventCard plagueCard = new EventCard("Plague");
-        game.handleEventCard(plagueCard, currentPlayer);
+        game.handleEventCard(plagueCard, currentPlayer, new Scanner(new ByteArrayInputStream(new byte[0])));
 
         assertEquals(0, currentPlayer.getShields(), "Player's shields should drop to zero.");
     }
@@ -156,7 +163,7 @@ public class GameTest {
         game.setupDecks();
         game.initializePlayers();
 
-        Player currentPlayer = game.getPlayers().getFirst();
+        Player currentPlayer = game.getPlayers().get(0);
 
         // Simulate a smaller initial hand size
         for (int i = 0; i < 9; i++) {
@@ -166,7 +173,7 @@ public class GameTest {
         assertEquals(9, initialHandSize, "Initial hand size should be 9.");
 
         EventCard queensFavorCard = new EventCard("Queen's Favor");
-        game.handleEventCard(queensFavorCard, currentPlayer);
+        game.handleEventCard(queensFavorCard, currentPlayer, new Scanner(new ByteArrayInputStream(new byte[0])));
 
         assertEquals(11, currentPlayer.getHandSize(), "Current player should have drawn 2 adventure cards.");
     }
@@ -188,7 +195,7 @@ public class GameTest {
         }
 
         EventCard prosperityCard = new EventCard("Prosperity");
-        game.handleEventCard(prosperityCard, null);
+        game.handleEventCard(prosperityCard, null, new Scanner(new ByteArrayInputStream(new byte[0])));
 
         // After drawing 2 cards, each player's hand size should now be 11 (9 + 2)
         for (Player player : game.getPlayers()) {
@@ -210,7 +217,7 @@ public class GameTest {
 
         Player currentPlayer = game.getCurrentPlayer();
         EventCard eventCard = new EventCard("Plague");
-        game.handleEventCard(eventCard, currentPlayer);
+        game.handleEventCard(eventCard, currentPlayer, new Scanner(new ByteArrayInputStream(new byte[0])));
 
         assertTrue(game.getEventDiscardPile().contains(eventCard), "Event card should be in the discard pile.");
         game.endTurn(); // End the current Players turn
@@ -235,6 +242,7 @@ public class GameTest {
         game.handleQuestCard(questCard, scanner);
 
         assertTrue(game.isSponsorshipOffered(), "Sponsorship should be offered to players.");
+        assertEquals("P2", game.getSponsor().getId(), "Player P2 should be the sponsor.");
     }
 
     @Test
@@ -265,7 +273,7 @@ public class GameTest {
         game.setupDecks();
         game.initializePlayers();
 
-        Player player = game.getPlayers().getFirst();
+        Player player = game.getPlayers().get(0);
 
         // Simulate player having more than 12 cards
         for (int i = 0; i < 14; i++) {
@@ -320,7 +328,7 @@ public class GameTest {
         game.initializePlayers();
         game.initializeTurnOrder();
 
-        Player sponsor = game.getPlayers().getFirst();
+        Player sponsor = game.getPlayers().get(0);
         game.setSponsor(sponsor);
 
         game.determineEligibleParticipants();
@@ -340,7 +348,7 @@ public class GameTest {
         game.initializePlayers();
 
         // Assume sponsor is P1
-        Player sponsor = game.getPlayers().getFirst();
+        Player sponsor = game.getPlayers().get(0);
         game.setSponsor(sponsor);
         game.determineEligibleParticipants();
 
@@ -463,7 +471,7 @@ public class GameTest {
         game.initializePlayers();
         game.dealCardsToPlayers();
 
-        Player sponsor = game.getPlayers().getFirst();
+        Player sponsor = game.getPlayers().get(0);
         game.setSponsor(sponsor);
         int initialHandSize = sponsor.getHandSize();
 
@@ -500,32 +508,27 @@ public class GameTest {
         game.setupDecks();
         game.initializePlayers();
 
-        Player sponsor = game.getPlayers().getFirst();
+        Player sponsor = game.getPlayers().get(0); // P1
         game.setSponsor(sponsor);
 
         // Simulate sponsor's hand with specific cards for testing
         sponsor.clearHand();
-        sponsor.addCardToHand(new FoeCard(10)); // F10
-        sponsor.addCardToHand(new WeaponCard("Sword", 10)); // S10
-        sponsor.addCardToHand(new FoeCard(20)); // F20
-        sponsor.addCardToHand(new WeaponCard("Horse", 10)); // H10
-        sponsor.addCardToHand(new FoeCard(30)); // F30
-        sponsor.addCardToHand(new WeaponCard("Lance", 20)); // L20
+        sponsor.addCardToHand(new FoeCard(10)); // Position 1: F10 = 10
+        sponsor.addCardToHand(new WeaponCard("Sword", 10)); // Position 2: S10 = 10
+        sponsor.addCardToHand(new FoeCard(20)); // Position 3: F20 = 20
+        sponsor.addCardToHand(new WeaponCard("Horse", 10)); // Position 4: H10 = 10
+        sponsor.addCardToHand(new FoeCard(30)); // Position 5: F30 = 30
+        sponsor.addCardToHand(new WeaponCard("Lance", 20)); // Position 6: L20 = 20
 
         // Simulate sponsor input to build 3 stages
-        // Stage 1: F10
-        // Stage 2: F20 + H10
-        // Stage 3: F30 + L20 + S10
-        String input = "1\nquit\n2\n4\nquit\n3\n6\n2\nquit\n";
-        InputStream stdin = System.in;
+        // Stage 1: "1" (F10), "quit"
+        // Stage 2: "1" (S10), "2" (F20), "quit"
+        // Stage 3: "1" (H10), "2" (F30), "3" (L20), "quit"
+        String input = "1\nquit\n1\n2\nquit\n1\n2\n3\nquit\n";
         Scanner scanner = new Scanner(new ByteArrayInputStream(input.getBytes()));
 
         game.sponsorSetsUpQuest(3, scanner); // Quest with 3 stages
 
-        // Restore original System.in
-        System.setIn(stdin);
-
-        // Verify that the stages are set up correctly
         List<Stage> stages = game.getQuestStages();
         assertEquals(3, stages.size(), "There should be 3 stages.");
 
@@ -536,6 +539,7 @@ public class GameTest {
 
         assertTrue(stageValue1 < stageValue2 && stageValue2 < stageValue3, "Each stage should have increasing value.");
     }
+
 
     @Test
     @DisplayName("Participant Builds Their Attack for the Current Stage")

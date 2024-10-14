@@ -1,18 +1,20 @@
 package org.example;
 public class WeaponCard extends Card {
-    private String name;
     private int value;
 
     public WeaponCard(String name, int value) {
         setType("Weapon");
-        this.name = name;
+        setName(name);
         this.value = value;
     }
 
     public int getValue() {
         return value;
     }
-    public String getName() {
-        return name;
+
+    @Override
+    public String toString() {
+        return getName() + " (Weapon, Power: " + value + ")";
     }
+
 }

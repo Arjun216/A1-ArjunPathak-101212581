@@ -4,10 +4,16 @@ public class EventCard extends Card {
 
     public EventCard(String eventName) {
         setType("Event");
+        setName(eventName);
         this.eventName = eventName;
     }
 
     public String getEventName() {
-        return eventName;
+        return getName();
+    }
+
+    @Override
+    public String toString() {
+        return eventName + " (Event)";
     }
 }

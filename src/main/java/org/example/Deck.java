@@ -15,7 +15,7 @@ public class Deck {
 
     // Constructor that accepts a list of cards
     public Deck(List<Card> cards) {
-        this.cards = cards;
+        this.cards = new ArrayList<>(cards);
         this.discardPile = new ArrayList<>();
     }
 
@@ -36,6 +36,7 @@ public class Deck {
         }
         return result;
     }
+
     public Card drawCard() {
         if (cards.isEmpty()) {
             reshuffleDiscardPile();
@@ -44,6 +45,10 @@ public class Deck {
             return null;
         }
         return cards.remove(0);
+    }
+
+    public void discardCard(Card card) { // NEW: Discard a card
+        discardPile.add(card);
     }
 
     private void reshuffleDiscardPile() {
@@ -55,4 +60,7 @@ public class Deck {
         }
     }
 
+    public void shuffle() { // NEW: Shuffle the deck
+        Collections.shuffle(cards);
+    }
 }
