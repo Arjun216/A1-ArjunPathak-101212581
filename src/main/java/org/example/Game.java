@@ -23,6 +23,8 @@ public class Game {
     private List<Player> eligibleParticipants = new ArrayList<>();
     private List<Player> stageParticipants = new ArrayList<>();
     private List<Player> winners = new ArrayList<>();
+    private List<Stage> questStages = new ArrayList<>();
+
 
 
     //RESP-01
@@ -363,5 +365,12 @@ public class Game {
             trimPlayerHand(sponsor, scanner);
         }
 
+    }
+
+    public void sponsorSetsUpQuest(int numStages) {
+    }
+
+    public List<Stage> getQuestStages() {
+        return null;
     }
 }

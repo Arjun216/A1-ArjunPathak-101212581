@@ -64,4 +64,7 @@ public class Player {
     public int getAttackValue() {
         return attackValue;
     }
+
+    public void clearHand() {
+    }
 }

@@ -494,4 +494,48 @@ public class GameTest {
         int cardsDrawn = Math.min(cardsUsed + questStages, adventureDeckSizeBefore);
         assertEquals(adventureDeckSizeBefore - cardsDrawn, adventureDeckSizeAfter, "Adventure deck size should reflect the number of cards drawn by the sponsor.");
     }
+
+    @Test
+    @DisplayName("Sponsor Builds Quest Stage")
+    public void RESP_24_test_01(){
+        Game game = new Game();
+        game.setupDecks();
+        game.initializePlayers();
+
+        Player sponsor = game.getPlayers().getFirst();
+        game.setSponsor(sponsor);
+
+        // Simulate sponsor's hand with specific cards for testing
+        sponsor.clearHand();
+        sponsor.addCardToHand(new FoeCard(10)); // F10
+        sponsor.addCardToHand(new WeaponCard("Sword", 10)); // S10
+        sponsor.addCardToHand(new FoeCard(20)); // F20
+        sponsor.addCardToHand(new WeaponCard("Horse", 10)); // H10
+        sponsor.addCardToHand(new FoeCard(30)); // F30
+        sponsor.addCardToHand(new WeaponCard("Lance", 20)); // L20
+
+        // Simulate sponsor input to build 3 stages
+        // Stage 1: F10
+        // Stage 2: F20 + H10
+        // Stage 3: F30 + L20 + S10
+        String input = "1\nquit\n2\n4\nquit\n3\n6\n2\nquit\n";
+        InputStream stdin = System.in;
+        System.setIn(new ByteArrayInputStream(input.getBytes()));
+
+        game.sponsorSetsUpQuest(3); // Quest with 3 stages
+
+        // Restore original System.in
+        System.setIn(stdin);
+
+        // Verify that the stages are set up correctly
+        List<Stage> stages = game.getQuestStages();
+        assertEquals(3, stages.size(), "There should be 3 stages.");
+
+        // Verify the values of each stage
+        int stageValue1 = stages.get(0).getTotalValue(); // Expected 10
+        int stageValue2 = stages.get(1).getTotalValue(); // Expected 30
+        int stageValue3 = stages.get(2).getTotalValue(); // Expected 60
+
+        assertTrue(stageValue1 < stageValue2 && stageValue2 < stageValue3, "Each stage should have increasing value.");
+    }
 }
