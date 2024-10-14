@@ -78,8 +78,16 @@ public class Game {
 
     public void playTurn() {
         Player player = getCurrentPlayer();
-        drawEventCard(player);
-
+        Card drawnCard = eventDeck.drawCard();
+        if (drawnCard instanceof EventCard eventCard) {
+            System.out.println(player.getId() + " drew an Event Card: " + eventCard.getEventName());
+            handleEventCard(eventCard, player);
+        } else if (drawnCard instanceof QuestCard questCard) {
+            System.out.println(player.getId() + " drew a Quest Card with " + questCard.getStages() + " stages.");
+            handleQuestCard(questCard);
+        } else {
+            System.out.println("Unknown card type drawn.");
+        }
     }
 
     public void checkForWinners() {
@@ -231,7 +239,7 @@ public class Game {
             // End current player's turn
             endTurn();
         } else {
-            // Proceed to UC-05: Sponsor sets up the quest
+            sponsorSetsUpQuest(questCard.getStages());
         }
     }
 
