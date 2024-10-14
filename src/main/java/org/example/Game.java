@@ -432,4 +432,7 @@ public class Game {
     public List<Stage> getQuestStages() {
         return questStages;
     }
+
+    public void participantSetsUpAttack(Player participant, Scanner scanner) {
+    }
 }

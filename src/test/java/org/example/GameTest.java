@@ -536,4 +536,36 @@ public class GameTest {
 
         assertTrue(stageValue1 < stageValue2 && stageValue2 < stageValue3, "Each stage should have increasing value.");
     }
+
+    @Test
+    @DisplayName("Participant Builds Their Attack for the Current Stage")
+    public void RESP_27_test_ParticipantSetsUpAttack() {
+        Game game = new Game();
+        game.setupDecks();
+        game.initializePlayers();
+
+        Player participant = game.getPlayers().get(1);
+
+        // Simulate participant's hand with specific weapon cards
+        participant.clearHand();
+        participant.addCardToHand(new WeaponCard("Dagger", 5)); // D5
+        participant.addCardToHand(new WeaponCard("Sword", 10)); // S10
+        participant.addCardToHand(new WeaponCard("Horse", 10)); // H10
+
+        // Simulate participant input to build an attack with D5 and S10
+        String input = "1\n2\nquit\n";
+        InputStream stdin = System.in;
+        Scanner scanner = new Scanner(new ByteArrayInputStream(input.getBytes()));
+
+        game.participantSetsUpAttack(participant, scanner);
+
+        System.setIn(stdin);
+
+        // Verify that the attack value is calculated correctly
+        int attackValue = participant.getAttackValue();
+        assertEquals(15, attackValue, "Participant's attack value should be 15.");
+
+        // Verify that the cards used are discarded
+        assertEquals(1, participant.getHandSize(), "Participant should have 1 card left in hand.");
+    }
 }
