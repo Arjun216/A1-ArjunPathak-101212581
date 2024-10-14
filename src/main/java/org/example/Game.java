@@ -9,7 +9,6 @@ public class Game {
     private Deck adventureDeck;
     private Deck eventDeck;
 
-    private List<Card> adventureDiscardPile = new ArrayList<>();
     private List<Card> eventDiscardPile = new ArrayList<>();
 
 

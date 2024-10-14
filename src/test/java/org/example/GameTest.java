@@ -95,7 +95,7 @@ public class GameTest {
         game.setupDecks();
         game.initializePlayers();
         game.dealCardsToPlayers();
-        Player player1 = game.getPlayers().get(0);
+        Player player1 = game.getPlayers().getFirst();
         player1.addShields(7);
 
         game.checkForWinners();
@@ -123,13 +123,12 @@ public class GameTest {
         game.setEventDeck(testEventDeck);
 
         Player currentPlayer = game.getCurrentPlayer();
-        Card drawnCard = game.drawEventCard(currentPlayer);
+        EventCard drawnCard = game.drawEventCard(currentPlayer);
 
         // Ensure an event card is drawn
         assertNotNull(drawnCard, "An event card should be drawn.");
-        assertTrue(drawnCard instanceof EventCard, "The drawn card should be an EventCard.");
-        EventCard eventCard = (EventCard) drawnCard;
-        assertEquals("Test Event", eventCard.getEventName(), "The event card drawn should be 'Test Event'.");
+        assertInstanceOf(EventCard.class, drawnCard, "The drawn card should be an EventCard.");
+        assertEquals("Test Event", drawnCard.getEventName(), "The event card drawn should be 'Test Event'.");
     }
 
     @Test
@@ -230,7 +229,6 @@ public class GameTest {
         game.initializeTurnOrder();
 
         String input = "no\nyes\n";
-        InputStream stdin = System.in;
         System.setIn(new ByteArrayInputStream(input.getBytes()));
         Scanner scanner = new Scanner(new ByteArrayInputStream(input.getBytes()));
         QuestCard questCard = new QuestCard(3); // Quest with 3 stages
