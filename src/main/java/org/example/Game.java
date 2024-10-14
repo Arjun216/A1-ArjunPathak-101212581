@@ -249,4 +249,14 @@ public class Game {
     public boolean isGameOver() {
         return gameOver;
     }
+
+    public void setSponsor(Player sponsor) {
+    }
+
+    public void determineEligibleParticipants() {
+    }
+
+    public List<Player> getEligibleParticipants() {
+        return null;
+    }
 }

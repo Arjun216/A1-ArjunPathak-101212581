@@ -292,7 +292,7 @@ public class GameTest {
     }
     @Test
     @DisplayName("Game offers quest sponsorship to players in order")
-    public void RESP_13_test_01() {
+    public void RESP_12_test_01() {
         Game game = new Game();
         game.setupDecks();
         game.initializePlayers();
@@ -313,5 +313,24 @@ public class GameTest {
 
         // Verify that P2 is the sponsor
         assertEquals("P2", game.getSponsor().getId(), "Player P2 should be the sponsor.");
+    }
+
+    @Test
+    public void RESP_13_test_01() {
+        Game game = new Game();
+        game.setupDecks();
+        game.initializePlayers();
+        game.initializeTurnOrder();
+
+        Player sponsor = game.getPlayers().get(0);
+        game.setSponsor(sponsor);
+
+        game.determineEligibleParticipants();
+
+        List<Player> participants = game.getEligibleParticipants();
+        assertEquals(3, participants.size(), "There should be 3 eligible participants.");
+        for (Player participant : participants) {
+            assertNotEquals(sponsor.getId(), participant.getId(), "Sponsor should not be in the participants list.");
+        }
     }
 }
