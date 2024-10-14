@@ -10,7 +10,7 @@ public class Game {
     private Deck eventDeck;
 
     private List<Card> eventDiscardPile = new ArrayList<>();
-
+    private List<Card> adventureDiscardPile = new ArrayList<>();
 
     private List<Player> players;
     private int currentPlayerIndex;
@@ -302,7 +302,7 @@ public class Game {
     }
     public void AddStageParticipants(Player player){
         stageParticipants.add(player);
-        
+
     }
 
     public void handleParticipantsDrawingAndTrimming(Scanner scanner) {
@@ -433,6 +433,51 @@ public class Game {
         return questStages;
     }
 
+    public void participantSetsUpAttack(Player participant) {
+        Scanner scanner = new Scanner(System.in);
+        participantSetsUpAttack(participant, scanner);
+    }
+
     public void participantSetsUpAttack(Player participant, Scanner scanner) {
+        System.out.println(participant.getId() + ", set up your attack for the current stage.");
+
+        Attack attack = new Attack();
+        while (true) {
+            participant.displayHand();
+            System.out.print("Enter the position of the weapon card to add to your attack or 'quit' to finish: ");
+            String input = scanner.nextLine().trim();
+
+            if (input.equalsIgnoreCase("quit")) {
+                if (attack.isValid()) {
+                    participant.setAttackValue(attack.getTotalValue());
+                    System.out.println("Your attack value is: " + attack.getTotalValue());
+                    // Discard used cards
+                    for (Card card : attack.getCards()) {
+                        participant.discardCard(participant.getHand().indexOf(card));
+                        adventureDiscardPile.add(card);
+                    }
+                    break;
+                } else {
+                    System.out.println("Your attack cannot be empty. Please add at least one weapon card.");
+                }
+            } else {
+                try {
+                    int position = Integer.parseInt(input);
+                    if (position < 1 || position > participant.getHandSize()) {
+                        System.out.println("Invalid position. Please try again.");
+                    } else {
+                        Card selectedCard = participant.getHand().get(position - 1);
+                        if (attack.canAddCard(selectedCard)) {
+                            attack.addCard(selectedCard);
+                            System.out.println("Card added to attack.");
+                        } else {
+                            System.out.println("Invalid card selection. Please select a non-repeated weapon card.");
+                        }
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid input. Please enter a card position or 'quit'.");
+                }
+            }
+        }
     }
 }
