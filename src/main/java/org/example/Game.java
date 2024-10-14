@@ -180,7 +180,6 @@ public class Game {
                 System.out.println("Invalid position. Please try again.");
                 position = scanner.nextInt();
             }
-            Card discardedCard = player.discardCard(position - 1);
         }
     }
 
@@ -266,5 +265,12 @@ public class Game {
 
     public void setSponsor(Player sponsor) {
         this.sponsor = sponsor;
+    }
+
+    public void promptParticipantsForStage(Scanner scanner) {
+    }
+
+    public List<Player> getStageParticipants() {
+        return null;
     }
 }

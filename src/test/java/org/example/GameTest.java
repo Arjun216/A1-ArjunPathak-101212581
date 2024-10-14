@@ -333,4 +333,32 @@ public class GameTest {
             assertNotEquals(sponsor.getId(), participant.getId(), "Sponsor should not be in the participants list.");
         }
     }
+
+    @Test
+    @DisplayName("Participants wanting to withdraw")
+    public void RESP_17_test_ParticipantDecision() {
+        Game game = new Game();
+        game.setupDecks();
+        game.initializePlayers();
+
+        // Assume sponsor is P1
+        Player sponsor = game.getPlayers().getFirst();
+        game.setSponsor(sponsor);
+        game.determineEligibleParticipants();
+
+        // Simulate participants' decisions: P2 participates, P3 withdraws, P4 participates
+        String input = "yes\nno\nyes\n";
+        InputStream stdin = System.in;
+        Scanner scanner = new Scanner(new ByteArrayInputStream(input.getBytes()));
+
+        game.promptParticipantsForStage(scanner);
+
+        System.setIn(stdin);
+
+        List<Player> participants = game.getStageParticipants();
+        assertEquals(2, participants.size(), "There should be 2 participants for the stage.");
+        assertTrue(participants.contains(game.getPlayers().get(1)), "P2 should be participating.");
+        assertTrue(participants.contains(game.getPlayers().get(3)), "P4 should be participating.");
+    }
+
 }
