@@ -425,4 +425,37 @@ public class GameTest {
         assertFalse(game.getEligibleParticipants().contains(participant2), "Participant 2 should be removed from eligible participants.");
     }
 
+    @Test
+    @DisplayName("Game awards shields to successful participants")
+    public void RESP_22_test_01() {
+        Game game = new Game();
+        game.setupDecks();
+        game.initializePlayers();
+
+        Player participant1 = game.getPlayers().get(1);
+        Player participant2 = game.getPlayers().get(3);
+        participant1.addShields(3); // Assume participant already has some shields
+        participant2.addShields(1); // Participant 2 also has some shields
+
+        game.addWinner(participant1);
+        game.addWinner(participant2);
+
+        int questStages = 3;
+
+        assertEquals(3, participant1.getShields(), "Participant 1 should initially have 3 shields.");
+        assertEquals(1, participant2.getShields(), "Participant 2 should initially have 1 shield.");
+
+        game.awardShieldsToWinners(questStages);
+
+        assertEquals(3 + questStages, participant1.getShields(), "Participant 1 should have received shields equal to the number of quest stages.");
+        assertEquals(1 + questStages, participant2.getShields(), "Participant 2 should have received shields equal to the number of quest stages.");
+
+        for (Player player : game.getPlayers()) {
+            if (!game.getWinners().contains(player)) {
+                assertEquals(0, player.getShields(), "Non-winning players should not have received any shields.");
+            }
+        }
+    }
+
+
 }

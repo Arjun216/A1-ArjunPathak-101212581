@@ -22,7 +22,7 @@ public class Game {
 
     private List<Player> eligibleParticipants = new ArrayList<>();
     private List<Player> stageParticipants = new ArrayList<>();
-
+    private List<Player> winners = new ArrayList<>();
 
 
     //RESP-01
@@ -332,5 +332,15 @@ public class Game {
                 eligibleParticipants.remove(participant); // Remove from eligible participants
             }
         }
+    }
+
+    public void addWinner(Player participant1) {
+    }
+
+    public void awardShieldsToWinners(int questStages) {
+    }
+
+    public List<Player> getWinners() {
+        return winners;
     }
 }
