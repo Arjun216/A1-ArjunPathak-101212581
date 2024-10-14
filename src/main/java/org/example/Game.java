@@ -1,6 +1,7 @@
 package org.example;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
 
@@ -18,6 +19,8 @@ public class Game {
     private boolean sponsorshipOffered;
     private Player sponsor;
     private List<Player> eligibleParticipants = new ArrayList<>();
+    private List<Player> stageParticipants = new ArrayList<>();
+
 
 
     //RESP-01
@@ -267,10 +270,31 @@ public class Game {
         this.sponsor = sponsor;
     }
 
+    public void promptParticipantsForStage() {
+        Scanner scanner = new Scanner(System.in);
+        promptParticipantsForStage(scanner);
+    }
+
     public void promptParticipantsForStage(Scanner scanner) {
+        stageParticipants.clear();
+        Iterator<Player> iterator = eligibleParticipants.iterator();
+        while (iterator.hasNext()) {
+            Player player = iterator.next();
+            System.out.println(player.getId() + ", do you want to participate in this stage? (yes/no)");
+            String response = scanner.nextLine().trim().toLowerCase();
+            while (!response.equals("yes") && !response.equals("no")) {
+                System.out.println("Invalid response. Please enter 'yes' or 'no'.");
+                response = scanner.nextLine().trim().toLowerCase();
+            }
+            if (response.equals("yes")) {
+                stageParticipants.add(player);
+            } else {
+                iterator.remove();
+            }
+        }
     }
 
     public List<Player> getStageParticipants() {
-        return null;
+        return stageParticipants;
     }
 }
