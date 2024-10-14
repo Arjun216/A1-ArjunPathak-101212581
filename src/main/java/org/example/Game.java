@@ -348,4 +348,12 @@ public class Game {
     public List<Player> getWinners() {
         return winners;
     }
+    public void sponsorDrawsReplacementCards(int cardsUsed, int questStages) {
+        Scanner scanner = new Scanner(System.in);
+        sponsorDrawsReplacementCards(cardsUsed, questStages, scanner);
+    }
+
+    public void sponsorDrawsReplacementCards(int cardsUsed, int questStages, Scanner scanner) {
+
+    }
 }

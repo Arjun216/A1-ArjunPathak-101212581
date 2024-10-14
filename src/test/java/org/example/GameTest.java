@@ -457,5 +457,41 @@ public class GameTest {
         }
     }
 
+    @Test
+    @DisplayName("Sponsor discards quest cards and draws replacement cards")
+    public void RESP_23_test_01() {
+        Game game = new Game();
+        game.setupDecks();
+        game.initializePlayers();
+        game.dealCardsToPlayers();
 
+        Player sponsor = game.getPlayers().getFirst();
+        game.setSponsor(sponsor);
+        int initialHandSize = sponsor.getHandSize();
+
+        int cardsUsed = 5;
+        for (int i = 0; i < cardsUsed; i++) {
+            sponsor.discardCard(1);
+        }
+        assertEquals(initialHandSize - cardsUsed, sponsor.getHandSize(), "Sponsor's hand should reflect cards used for building the quest.");
+
+        int adventureDeckSizeBefore = game.getAdventureDeck().getTotalCards();
+
+        int questStages = 3;
+        String input = "15\n14\n13\n";
+        Scanner scanner = new Scanner(new ByteArrayInputStream(input.getBytes()));
+        game.sponsorDrawsReplacementCards(cardsUsed, questStages, scanner);
+
+        int expectedHandSize = initialHandSize - cardsUsed + cardsUsed + questStages;
+
+        if (expectedHandSize > 12) {
+            assertEquals(12, sponsor.getHandSize(), "Sponsor's hand should be trimmed to 12 cards.");
+        } else {
+            assertEquals(expectedHandSize, sponsor.getHandSize(), "Sponsor's hand should reflect cards drawn and any additional cards for quest stages.");
+        }
+
+        int adventureDeckSizeAfter = game.getAdventureDeck().getTotalCards();
+        int cardsDrawn = Math.min(cardsUsed + questStages, adventureDeckSizeBefore);
+        assertEquals(adventureDeckSizeBefore - cardsDrawn, adventureDeckSizeAfter, "Adventure deck size should reflect the number of cards drawn by the sponsor.");
+    }
 }
