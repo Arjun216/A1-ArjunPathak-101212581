@@ -174,7 +174,6 @@ public class Game {
         System.out.println("You have " + player.getHandSize() + " cards. Please discard " + excessCards + " card(s).");
 
         for (int i = 0; i < excessCards; i++) {
-            System.out.println("Your hand:");
             player.displayHand();
 
             System.out.print("Enter the position of the card to discard: ");
@@ -183,6 +182,7 @@ public class Game {
                 System.out.println("Invalid position. Please try again.");
                 position = scanner.nextInt();
             }
+            player.discardCard(position - 1);
         }
     }
 
@@ -298,9 +298,22 @@ public class Game {
         return stageParticipants;
     }
     public void AddStageParticipants(Player player){
+        stageParticipants.add(player);
         
     }
 
-    public void handleParticipantsDrawingAndTrimming() {
+    public void handleParticipantsDrawingAndTrimming(Scanner scanner) {
+
+        for (Player participant : stageParticipants) {
+            Card card = adventureDeck.drawCard();
+            participant.addCardToHand(card);
+            System.out.println(participant.getId() + " draws a card.");
+
+            if (participant.getHandSize() > 12) {
+                System.out.println(participant.getId() + " has more than 12 cards and needs to trim their hand.");
+                trimPlayerHand(participant, scanner);
+            }
+        }
     }
+
 }

@@ -367,6 +367,7 @@ public class GameTest {
         Game game = new Game();
         game.setupDecks();
         game.initializePlayers();
+        game.dealCardsToPlayers();
 
         Player participant1 = game.getPlayers().get(1);
         Player participant2 = game.getPlayers().get(3);
@@ -383,11 +384,17 @@ public class GameTest {
         assertEquals(13, participant1.getHandSize(), "Participant 1 should have 13 cards after drawing.");
         assertEquals(13, participant2.getHandSize(), "Participant 2 should have 13 cards after drawing.");
 
-        game.handleParticipantsDrawingAndTrimming();
+        // Use mock input for trimming cards
+        String input = "13\n12\n13\n12\n";
+        Scanner scanner = new Scanner(new ByteArrayInputStream(input.getBytes()));
+
+        // Call handleParticipantsDrawingAndTrimming with mock scanner
+        game.handleParticipantsDrawingAndTrimming(scanner);
 
         assertEquals(12, participant1.getHandSize(), "Participant 1 should have 12 cards after trimming.");
         assertEquals(12, participant2.getHandSize(), "Participant 2 should have 12 cards after trimming.");
     }
+
 
 
 }
