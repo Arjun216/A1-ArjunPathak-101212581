@@ -520,9 +520,9 @@ public class GameTest {
         // Stage 3: F30 + L20 + S10
         String input = "1\nquit\n2\n4\nquit\n3\n6\n2\nquit\n";
         InputStream stdin = System.in;
-        System.setIn(new ByteArrayInputStream(input.getBytes()));
+        Scanner scanner = new Scanner(new ByteArrayInputStream(input.getBytes()));
 
-        game.sponsorSetsUpQuest(3); // Quest with 3 stages
+        game.sponsorSetsUpQuest(3, scanner); // Quest with 3 stages
 
         // Restore original System.in
         System.setIn(stdin);

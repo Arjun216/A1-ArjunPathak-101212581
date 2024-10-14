@@ -368,6 +368,11 @@ public class Game {
     }
 
     public void sponsorSetsUpQuest(int numStages) {
+        Scanner scanner = new Scanner(System.in);
+        sponsorSetsUpQuest(numStages, scanner);
+    }
+
+    public void sponsorSetsUpQuest(int numStages, Scanner scanner) {
     }
 
     public List<Stage> getQuestStages() {
