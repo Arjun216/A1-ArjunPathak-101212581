@@ -6,6 +6,7 @@ public class Player {
     private String id;
     private List<Card> hand;
     private int shields;
+    private int attackValue;
 
     public Player(String id) {
         this.id = id;
@@ -56,6 +57,11 @@ public class Player {
         return hand.remove(index);
     }
 
-    public void setAttackValue(int stageValue) {
+    public void setAttackValue(int value) {
+        this.attackValue = value;
+    }
+
+    public int getAttackValue() {
+        return attackValue;
     }
 }

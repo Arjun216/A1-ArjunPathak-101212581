@@ -319,5 +319,18 @@ public class Game {
     }
 
     public void resolveStage(int stageValue) {
+        Iterator<Player> iterator = stageParticipants.iterator();
+        while (iterator.hasNext()) {
+            Player participant = iterator.next();
+            int attackValue = participant.getAttackValue();
+            if (attackValue >= stageValue) {
+                System.out.println(participant.getId() + " has passed the stage.");
+                // Participant remains eligible
+            } else {
+                System.out.println(participant.getId() + " has failed the stage.");
+                iterator.remove(); // Remove from stage participants
+                eligibleParticipants.remove(participant); // Remove from eligible participants
+            }
+        }
     }
 }
