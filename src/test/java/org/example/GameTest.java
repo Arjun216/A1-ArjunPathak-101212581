@@ -228,7 +228,7 @@ public class GameTest {
 
     @Test
     @DisplayName("Game handles drawing a quest card")
-    public void RESP_9_test_DrawQuestCard() {
+    public void RESP_9_test_01() {
         Game game = new Game();
         game.setupDecks();
         game.initializePlayers();
@@ -342,7 +342,7 @@ public class GameTest {
 
     @Test
     @DisplayName("Participants wanting to withdraw")
-    public void RESP_17_test_ParticipantDecision() {
+    public void RESP_17_test_01() {
         Game game = new Game();
         game.setupDecks();
         game.initializePlayers();
@@ -403,7 +403,7 @@ public class GameTest {
 
     @Test
     @DisplayName("Resolving the Current Stage")
-    public void RESP_20_test_ResolveStage() {
+    public void RESP_20_test_01() {
         Game game = new Game();
         game.setupDecks();
         game.initializePlayers();
@@ -543,7 +543,7 @@ public class GameTest {
 
     @Test
     @DisplayName("Participant Builds Their Attack for the Current Stage")
-    public void RESP_27_test_ParticipantSetsUpAttack() {
+    public void RESP_27_test_01() {
         Game game = new Game();
         game.setupDecks();
         game.initializePlayers();
