@@ -451,7 +451,7 @@ public class GameTest {
         assertEquals(3, participant1.getShields(), "Participant 1 should initially have 3 shields.");
         assertEquals(1, participant2.getShields(), "Participant 2 should initially have 1 shield.");
 
-        game.awardShieldsToWinners(questStages);
+        game.awardShieldsToWinners(game.getStageParticipants(), questStages);
 
         assertEquals(3 + questStages, participant1.getShields(), "Participant 1 should have received shields equal to the number of quest stages.");
         assertEquals(1 + questStages, participant2.getShields(), "Participant 2 should have received shields equal to the number of quest stages.");
