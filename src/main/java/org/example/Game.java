@@ -578,7 +578,9 @@ public class Game {
                 break;
             }
         }
-        trimPlayerHand(sponsor, scanner);
+        if(sponsor.getHandSize()  > 12) {
+            trimPlayerHand(sponsor, scanner);
+        }
     }
 
 
