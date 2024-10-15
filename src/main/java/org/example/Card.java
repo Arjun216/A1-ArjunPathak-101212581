@@ -3,6 +3,7 @@ package org.example;
 public abstract class Card {
     private String type;
     private String name;
+    protected int value;
 
     public String getType() {
         return type;
@@ -17,6 +18,9 @@ public abstract class Card {
 
     protected void setName(String name) {
         this.name = name;
+    }
+    public int getValue(){
+        return value;
     }
 
 }

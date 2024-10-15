@@ -63,4 +63,7 @@ public class Deck {
     public void shuffle() { // NEW: Shuffle the deck
         Collections.shuffle(cards);
     }
+    public List<Card> getCards() {
+        return this.cards;
+    }
 }

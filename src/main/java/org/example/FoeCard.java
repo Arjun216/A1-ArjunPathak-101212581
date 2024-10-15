@@ -1,7 +1,6 @@
 package org.example;
 
 public class FoeCard extends Card {
-    private int value;
 
     public FoeCard(int value) {
         setType("Foe");

@@ -9,6 +9,9 @@ public class Player {
     private List<Card> hand;
     private int shields;
     private int attackValue;
+    private List<Card> currentAttack;
+    private int initialHandSize;
+
 
     public Player(String id) {
         this.id = id;
@@ -31,43 +34,29 @@ public class Player {
     public List<Card> getHand() {
         return hand;
     }
+    public void setHand(List<Card> hand) {
+        this.hand = hand;
+    }
 
     public int getShields() {
         return shields;
+    }
+    public void setCurrentAttack(List<Card> attackCards) {
+        this.currentAttack = attackCards;
+    }
+    public List<Card> getCurrentAttack() {
+        return this.currentAttack;
     }
 
     public void addShields(int number) {
         shields += number;
     }
-    public void discardExcessCards(Scanner scanner) {
-        int excessCards = hand.size() - 12;
-        System.out.println("You have " + hand.size() + " cards. Please discard " + excessCards + " card(s).");
-        for (int i = 0; i < excessCards; i++) {
-            displayHand();
-            System.out.print("Enter the position of the card to discard: ");
-            String input = scanner.nextLine();
-            try {
-                int index = Integer.parseInt(input) - 1;
-                if (index < 0 || index >= hand.size()) {
-                    System.out.println("Invalid position. Please try again.");
-                    i--; // Repeat this iteration
-                } else {
-                    Card discardedCard = hand.remove(index);
-                    System.out.println("Discarded: " + discardedCard);
-                }
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid input. Please enter a number.");
-                i--; // Repeat this iteration
-            }
-        }
-    }
-
 
     public void displayHand() {
         hand.sort(new CardComparator());
 
         // Display the sorted hand
-        System.out.println("Your Hand:");
+        System.out.println("Your Hand:" + getId());
         int index = 1;
         for (Card card : hand) {
             if (card instanceof FoeCard) {
@@ -100,5 +89,12 @@ public class Player {
 
     public void removeCardFromHand(int index) {
         hand.remove(index);
+    }
+    public void setInitialHandSize(int size) {
+        this.initialHandSize = size;
+    }
+
+    public int getInitialHandSize() {
+        return this.initialHandSize;
     }
 }

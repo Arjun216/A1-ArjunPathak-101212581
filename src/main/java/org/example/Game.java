@@ -22,6 +22,7 @@ public class Game {
     private List<Player> stageParticipants = new ArrayList<>();
     private List<Player> winners = new ArrayList<>();
     private List<Stage> questStages = new ArrayList<>();
+    Scanner scanner = new Scanner(System.in);
 
     // RESP-01
     public void setupDecks() {
@@ -127,6 +128,7 @@ public class Game {
             System.out.println("Player " + player.getId() + " drew quest card with " + questCard.getStages() + " stages.");
             return null;
         } else {
+            System.out.println("Unknown card");
             return null;
         }
     }
@@ -177,7 +179,7 @@ public class Game {
 
         for (int i = 0; i < excessCards; i++) {
             player.displayHand();
-            System.out.print("Enter the position of the card to discard: ");
+            System.out.println("Enter the position of the card to discard: ");
             if (!scanner.hasNextLine()) {
                 System.out.println("No input provided. Skipping discard.");
                 break;
@@ -236,11 +238,14 @@ public class Game {
         int attempts = 0;
         sponsor = null;
 
+
+
         while (attempts < players.size()) {
             Player player = players.get(index);
             if (askForSponsorship(player, scanner)) {
                 sponsor = player;
                 System.out.println(player.getId() + " is the sponsor for this quest.");
+                sponsor.setInitialHandSize(sponsor.getHandSize());
                 break;
             }
             index = (index + 1) % players.size();
@@ -276,11 +281,38 @@ public class Game {
                     questFailed = true;
                     break;
                 }
+                Iterator<Player> iterator = stageParticipants.iterator();
+                while (iterator.hasNext()) {
+                    Player participant = iterator.next();
+                    System.out.println(participant.getId() + ", do you want to continue to the next stage? (yes/no)");
+                    if (!scanner.hasNextLine()) {
+                        System.out.println("No input provided. Assuming 'no'.");
+                        iterator.remove();
+                        eligibleParticipants.remove(participant);
+                        continue;
+                    }
+                    String response = scanner.nextLine().trim().toLowerCase();
+                    while (!response.equals("yes") && !response.equals("no")) {
+                        System.out.println("Invalid response. Please enter 'yes' or 'no'.");
+                        if (!scanner.hasNextLine()) {
+                            System.out.println("No input provided. Assuming 'no'.");
+                            response = "no";
+                            break;
+                        }
+                        response = scanner.nextLine().trim().toLowerCase();
+                    }
+                    if (response.equals("no")) {
+                        iterator.remove();
+                        eligibleParticipants.remove(participant);
+                        System.out.println(participant.getId() + " has opted out of the quest.");
+                    }
+                }
             }
 
             if (!questFailed && !stageParticipants.isEmpty()) {
-                awardShieldsToWinners(questCard.getStages());
+                awardShieldsToWinners(stageParticipants, questStages.size());
             }
+            replenishSponsorHand(sponsor, scanner);
 
             questStages.clear();
             checkForWinners();
@@ -288,7 +320,7 @@ public class Game {
     }
 
 
-        private boolean askForSponsorship(Player player, Scanner scanner) {
+    private boolean askForSponsorship(Player player, Scanner scanner) {
         System.out.println(player.getId() + ", do you want to sponsor the quest? (yes/no)");
         if (!scanner.hasNextLine()) {
             System.out.println("No input provided. Assuming 'no'.");
@@ -374,7 +406,7 @@ public class Game {
         for (Player participant : stageParticipants) {
             Card card = adventureDeck.drawCard();
             participant.addCardToHand(card);
-            System.out.println(participant.getId() + " draws a card.");
+            System.out.println(participant.getId() + " draws a card." + card.getName());
 
             if (participant.getHandSize() > 12) {
                 System.out.println(participant.getId() + " has more than 12 cards and needs to trim their hand.");
@@ -392,7 +424,7 @@ public class Game {
                 System.out.println(participant.getId() + " has passed the stage.");
                 // Participant remains eligible
             } else {
-                System.out.println(participant.getId() + " has failed the stage.");
+                System.out.println(participant.getId() + " has failed the stage." + participant.getAttackValue());
                 iterator.remove(); // Remove from stage participants
                 eligibleParticipants.remove(participant); // Remove from eligible participants
             }
@@ -401,12 +433,13 @@ public class Game {
 
     public void addWinner(Player participant) {
         winners.add(participant);
+        stageParticipants.add(participant);
     }
 
-    public void awardShieldsToWinners(int questStages) {
-        for (Player winner : winners) {
-            winner.addShields(questStages);
-            System.out.println(winner.getId() + " receives " + questStages + " shields.");
+    public void awardShieldsToWinners(List<Player> successfulParticipants, int questStages) {
+        for (Player participant : successfulParticipants) {
+            participant.addShields(questStages);
+            System.out.println(participant.getId() + " receives " + questStages + " shields.");
         }
     }
 
@@ -437,7 +470,7 @@ public class Game {
             boolean stageComplete = false;
             while (!stageComplete) {
                 sponsor.displayHand();
-                System.out.print("Enter the position of the card to add to this stage or 'quit' to finish the stage: ");
+                System.out.println("Enter the position of the card to add to this stage or 'quit' to finish the stage: ");
 
                 if (!scanner.hasNextLine()) {
                     System.out.println("No input provided. Skipping to next stage.");
@@ -490,58 +523,64 @@ public class Game {
     }
 
 
+
     public List<Stage> getQuestStages() {
         return questStages;
     }
 
     public void participantSetsUpAttack(Player participant, Scanner scanner) {
-        System.out.println(participant.getId() + ", set up your attack for the current stage.");
+        int attackValue = 0;
+        System.out.println(participant.getId() + ", set up your attack for this stage:");
+        participant.displayHand();
 
-        Attack attack = new Attack();
+        List<Card> attackCards = new ArrayList<>();
+        String input;
         while (true) {
-            participant.displayHand();
-            System.out.print("Enter the position of the weapon card to add to your attack or 'quit' to finish: ");
-            if (!scanner.hasNextLine()) {
-                System.out.println("No input provided. Finishing attack setup.");
+            System.out.print("Enter the position of the card to add to your attack or 'quit' to finish: ");
+            input = scanner.nextLine().trim();
+            if (input.equalsIgnoreCase("quit")) {
                 break;
             }
-            String input = scanner.nextLine().trim();
-
-            if (input.equalsIgnoreCase("quit")) {
-                if (attack.isValid()) {
-                    participant.setAttackValue(attack.getTotalValue());
-                    System.out.println("Your attack value is: " + attack.getTotalValue());
-                    // Discard used cards
-                    for (Card card : attack.getCards()) {
-                        participant.getHand().remove(card);
-                        adventureDiscardPile.add(card);
-                    }
-                    break;
+            int position;
+            try {
+                position = Integer.parseInt(input);
+                if (position >= 1 && position <= participant.getHandSize()) {
+                    Card selectedCard = participant.getHand().get(position - 1);
+                    attackCards.add(selectedCard);
+                    participant.getHand().remove(selectedCard); // Remove card from hand
+                    System.out.println("Added " + selectedCard.getName() + " to your attack.");
+                    attackValue = attackValue + selectedCard.getValue();
                 } else {
-                    System.out.println("Your attack cannot be empty. Please add at least one weapon card.");
+                    System.out.println("Invalid position.");
                 }
-            } else {
-                try {
-                    int position = Integer.parseInt(input);
-                    if (position < 1 || position > participant.getHandSize()) {
-                        System.out.println("Invalid position. Please try again.");
-                    } else {
-                        Card selectedCard = participant.getHand().get(position - 1);
-                        if (selectedCard instanceof WeaponCard weaponCard) {
-                            if (attack.canAddCard(weaponCard)) {
-                                attack.addCard(selectedCard);
-                                System.out.println("Card added to attack.");
-                            } else {
-                                System.out.println("Invalid card selection. Please select a non-repeated weapon card.");
-                            }
-                        } else {
-                            System.out.println("Only weapon cards can be added to an attack.");
-                        }
-                    }
-                } catch (NumberFormatException e) {
-                    System.out.println("Invalid input. Please enter a card position or 'quit'.");
-                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input.");
             }
         }
+        participant.setAttackValue(attackValue);
+        participant.setCurrentAttack(attackCards);
     }
+
+    public void replenishSponsorHand(Player sponsor, Scanner scanner) {
+        int cardsUsed = sponsor.getInitialHandSize() - sponsor.getHandSize();
+        int cardsToDraw = cardsUsed + 2;
+        for (int i = 1; i < sponsor.getHandSize(); i++){
+            sponsor.discardCard(i);
+        }
+
+        for (int i = 0; i < cardsToDraw; i++) {
+            Card card = adventureDeck.drawCard();
+            if (card != null) {
+                sponsor.addCardToHand(card);
+                System.out.println(sponsor.getId() + " draws a replacement card: " + card.getName());
+            } else {
+                System.out.println(sponsor.getId() + " could not draw a replacement card because the deck is empty.");
+                break;
+            }
+        }
+        trimPlayerHand(sponsor, scanner);
+    }
+
+
+
 }
