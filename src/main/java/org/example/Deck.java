@@ -41,9 +41,6 @@ public class Deck {
         if (cards.isEmpty()) {
             reshuffleDiscardPile();
         }
-        if (cards.isEmpty()) {
-            return null;
-        }
         return cards.remove(0);
     }
 

@@ -24,7 +24,6 @@ public class Game {
     private List<Stage> questStages = new ArrayList<>();
     Scanner scanner = new Scanner(System.in);
 
-    // RESP-01
     public void setupDecks() {
         adventureDeck = new Deck();
         eventDeck = new Deck();
@@ -88,7 +87,14 @@ public class Game {
         } else if (drawnCard instanceof QuestCard questCard) {
             System.out.println(player.getId() + " drew a Quest Card with " + questCard.getStages() + " stages.");
             handleQuestCard(questCard, scanner);
-            endTurn();
+            sponsorSetsUpQuest(questCard.getStages(), scanner);
+            determineEligibleParticipants();
+            promptParticipantsForStage(scanner);
+            if(sponsor!= null) {
+                playTurns(scanner);
+            }
+
+            //endTurn();
         } else {
             System.out.println("Unknown card type drawn.");
             endTurn();
@@ -185,6 +191,7 @@ public class Game {
                 break;
             }
             String input = scanner.nextLine().trim();
+            System.out.println("*****" + input); //temp
             while (!input.matches("\\d+")) {
                 System.out.println("Invalid input. Please enter a valid card position.");
                 if (!scanner.hasNextLine()) {
@@ -192,6 +199,7 @@ public class Game {
                     break;
                 }
                 input = scanner.nextLine().trim();
+                System.out.println("input"); //temp
             }
             if (input.equals("")) {
                 System.out.println("No input provided. Skipping discard.");
@@ -205,6 +213,7 @@ public class Game {
                     break;
                 }
                 input = scanner.nextLine().trim();
+                System.out.println("input"); //temp
                 if (input.equals("")) {
                     System.out.println("No input provided. Skipping discard.");
                     break;
@@ -232,12 +241,73 @@ public class Game {
         offerSponsorship(questCard, scanner);
     }
 
-    public void offerSponsorship(QuestCard questCard, Scanner scanner) {
+    public void playTurns(Scanner scanner) {
+        boolean questFailed = false;
+
+        for (Stage stage : questStages) {
+            if (stageParticipants.isEmpty()) {
+                System.out.println("No participants remain. The quest ends.");
+                questFailed = true;
+                break;
+            }
+
+            handleParticipantsDrawingAndTrimming(scanner);
+
+            for (Player participant : stageParticipants) {
+                participantSetsUpAttack(participant, scanner);
+            }
+
+            resolveStage(stage.getTotalValue());
+
+            if (stageParticipants.isEmpty()) {
+                System.out.println("All participants have failed the quest.");
+                questFailed = true;
+                break;
+            }
+            Iterator<Player> iterator = stageParticipants.iterator();
+            while (iterator.hasNext()) {
+                Player participant = iterator.next();
+                System.out.println(participant.getId() + ", do you want to continue to the next stage? (yes/no)");
+                if (!scanner.hasNextLine()) {
+                    System.out.println("No input provided. Assuming 'no'.");
+                    iterator.remove();
+                    eligibleParticipants.remove(participant);
+                    continue;
+                }
+                String response = scanner.nextLine().trim().toLowerCase();
+                System.out.println("*****" + response); //temp
+                while (!response.equals("yes") && !response.equals("no")) {
+                    System.out.println("Invalid response. Please enter 'yes' or 'no'.");
+                    if (!scanner.hasNextLine()) {
+                        System.out.println("No input provided. Assuming 'no'.");
+                        response = "no";
+                        break;
+                    }
+                    response = scanner.nextLine().trim().toLowerCase();
+                    System.out.println("*****" + response); //temp
+                }
+                if (response.equals("no")) {
+                    iterator.remove();
+                    eligibleParticipants.remove(participant);
+                    System.out.println(participant.getId() + " has opted out of the quest.");
+                }
+            }
+        }
+
+        if (!questFailed && !stageParticipants.isEmpty()) {
+            awardShieldsToWinners(stageParticipants, questStages.size());
+        }
+        replenishSponsorHand(sponsor, scanner);
+
+        questStages.clear();
+        checkForWinners();
+    }
+
+    public Player offerSponsorship(QuestCard questCard, Scanner scanner) {
         sponsorshipOffered = true;
         int index = currentPlayerIndex;
         int attempts = 0;
         sponsor = null;
-
 
 
         while (attempts < players.size()) {
@@ -251,72 +321,13 @@ public class Game {
             index = (index + 1) % players.size();
             attempts++;
         }
+
         if (sponsor == null) {
             System.out.println("No sponsor found. The quest is discarded.");
             eventDiscardPile.add(questCard);
-        } else {
-            sponsorSetsUpQuest(questCard.getStages(), scanner);
-            determineEligibleParticipants();
-            promptParticipantsForStage(scanner);
-
-            boolean questFailed = false;
-
-            for (Stage stage : questStages) {
-                if (stageParticipants.isEmpty()) {
-                    System.out.println("No participants remain. The quest ends.");
-                    questFailed = true;
-                    break;
-                }
-
-                handleParticipantsDrawingAndTrimming(scanner);
-
-                for (Player participant : stageParticipants) {
-                    participantSetsUpAttack(participant, scanner);
-                }
-
-                resolveStage(stage.getTotalValue());
-
-                if (stageParticipants.isEmpty()) {
-                    System.out.println("All participants have failed the quest.");
-                    questFailed = true;
-                    break;
-                }
-                Iterator<Player> iterator = stageParticipants.iterator();
-                while (iterator.hasNext()) {
-                    Player participant = iterator.next();
-                    System.out.println(participant.getId() + ", do you want to continue to the next stage? (yes/no)");
-                    if (!scanner.hasNextLine()) {
-                        System.out.println("No input provided. Assuming 'no'.");
-                        iterator.remove();
-                        eligibleParticipants.remove(participant);
-                        continue;
-                    }
-                    String response = scanner.nextLine().trim().toLowerCase();
-                    while (!response.equals("yes") && !response.equals("no")) {
-                        System.out.println("Invalid response. Please enter 'yes' or 'no'.");
-                        if (!scanner.hasNextLine()) {
-                            System.out.println("No input provided. Assuming 'no'.");
-                            response = "no";
-                            break;
-                        }
-                        response = scanner.nextLine().trim().toLowerCase();
-                    }
-                    if (response.equals("no")) {
-                        iterator.remove();
-                        eligibleParticipants.remove(participant);
-                        System.out.println(participant.getId() + " has opted out of the quest.");
-                    }
-                }
-            }
-
-            if (!questFailed && !stageParticipants.isEmpty()) {
-                awardShieldsToWinners(stageParticipants, questStages.size());
-            }
-            replenishSponsorHand(sponsor, scanner);
-
-            questStages.clear();
-            checkForWinners();
         }
+
+        return sponsor;
     }
 
 
@@ -327,6 +338,7 @@ public class Game {
             return false;
         }
         String response = scanner.nextLine().trim().toLowerCase();
+        System.out.println("*****" + response); //temp
         while (!response.equals("yes") && !response.equals("no")) {
             System.out.println("Invalid response. Please enter 'yes' or 'no'.");
             if (!scanner.hasNextLine()) {
@@ -334,6 +346,7 @@ public class Game {
                 return false;
             }
             response = scanner.nextLine().trim().toLowerCase();
+            System.out.println("*****" + response); //temp
         }
         return response.equals("yes");
     }
@@ -378,6 +391,7 @@ public class Game {
                 continue;
             }
             String response = scanner.nextLine().trim().toLowerCase();
+            System.out.println("*****" + response); //temp
             while (!response.equals("yes") && !response.equals("no")) {
                 System.out.println("Invalid response. Please enter 'yes' or 'no'.");
                 if (!scanner.hasNextLine()) {
@@ -385,6 +399,7 @@ public class Game {
                     break;
                 }
                 response = scanner.nextLine().trim().toLowerCase();
+                System.out.println("*****" + response); //temp
             }
             if (response.equals("yes")) {
                 stageParticipants.add(player);
@@ -477,6 +492,7 @@ public class Game {
                     break;
                 }
                 String input = scanner.nextLine().trim();
+                System.out.println("*****" + input); //temp
 
                 if (input.equalsIgnoreCase("quit")) {
                     if (stage.isValid(previousStageValue)) {
@@ -538,6 +554,7 @@ public class Game {
         while (true) {
             System.out.print("Enter the position of the card to add to your attack or 'quit' to finish: ");
             input = scanner.nextLine().trim();
+            System.out.println("*****" + input); //temp
             if (input.equalsIgnoreCase("quit")) {
                 break;
             }
