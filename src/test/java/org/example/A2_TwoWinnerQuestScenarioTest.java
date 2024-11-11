@@ -90,7 +90,7 @@ public class A2_TwoWinnerQuestScenarioTest {
 
     @And("Player 2 draws a 3-stage quest and declines to sponsor it")
     public void player2_draws_a_3_stage_quest_and_declines_to_sponsor_it() {
-        game.offerSponsorship(new QuestCard(4), new Scanner(new ByteArrayInputStream("no\nyes\n".getBytes())));
+        game.offerSponsorship(new QuestCard(3), new Scanner(new ByteArrayInputStream("no\nyes\n".getBytes())));
         Assertions.assertEquals(player3, game.getSponsor(), "Player 3 should be the sponsor.");
     }
     @When("Player 3 decides to sponsor the quest and builds its stages")

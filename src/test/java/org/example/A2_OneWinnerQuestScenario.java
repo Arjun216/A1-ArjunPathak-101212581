@@ -140,14 +140,16 @@ public class A2_OneWinnerQuestScenario {
 
     @When("P2 and P3 win Quest 1")
     public void p2_and_p3_participate_and_win_stages_2_and_3() {
-        Assertions.assertTrue(game.getStageParticipants().contains(player3), "Player 2 should have won stage 1.");
-        Assertions.assertTrue(game.getStageParticipants().contains(player2), "Player 4 should have won stage 1.");
+        Assertions.assertTrue(game.getStageParticipants().contains(player3), "Player 3 should have won stage 1.");
+        Assertions.assertTrue(game.getStageParticipants().contains(player2), "Player 2 should have won stage 1.");
     }
 
     @Then("P2 and P3 each earn 3 shields")
     public void p2_and_p3_each_earn_3_shields() {
-        Assertions.assertEquals(7, player3.getShields(), "Player 3 should have 4 shields.");
-        Assertions.assertEquals(5, player2.getShields(), "Player 4 should have 4 shields.");
+        Assertions.assertEquals(7, player3.getShields(), "Player 3 should have 7 shields.");
+        Assertions.assertEquals(5, player2.getShields(), "Player 4 should have 5 shields.");
+        Assertions.assertEquals(4, player4.getShields(), "Player 4 should have 4 shields.");
+
         game.endTurn();
     }
 
