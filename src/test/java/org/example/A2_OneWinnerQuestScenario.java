@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.io.ByteArrayInputStream;
 import java.util.*;
 
-public class A1_OneWinnerQuestScenario {
+public class A2_OneWinnerQuestScenario {
 
     private Game game;
     private Player player1, player2, player3, player4;
