@@ -76,6 +76,9 @@ public class A2_ZeroWinners {
     @Then("there is no winner")
     public void there_is_no_winner() {
         assertTrue(game.getWinners().isEmpty(), "No Winners");
+        Assertions.assertEquals(0, player2.getShields(), "Player 2 should have 0 shields.");
+        Assertions.assertEquals(0, player3.getShields(), "Player 2 should have 0 shields.");
+        Assertions.assertEquals(0, player4.getShields(), "Player 4 should have 0 shields.");
 
     }
 
