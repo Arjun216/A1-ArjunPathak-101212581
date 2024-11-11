@@ -8,9 +8,9 @@ Feature: Quest with multiple stages and winners
     And the players' hands are rigged
     And Player 1 is offered sponsorship and accepts
     And Players 2, 3, and 4 decide to participate
-    And Players 2, 3, and 4 complete the first stage
-    Then Players 2 and 4 should have won stage 1
-    And Player 3 should have lost stage 1
+    And Players 2, 3, and 4 complete the first Quest
+    Then Players 2 and 4 should have won Quest 1
+    And Player 3 should have lost Quest 1
     Then Players 2 and 4 should each have 4 shields
     When Player 2 draws a 3-stage quest and declines to sponsor it
     And Player 3 decides to sponsor the quest and builds its stages

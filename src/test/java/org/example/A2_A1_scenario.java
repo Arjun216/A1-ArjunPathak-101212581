@@ -3,127 +3,104 @@ package org.example;
 import io.cucumber.java.en.*;
 import org.junit.jupiter.api.Assertions;
 
-import java.io.ByteArrayInputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Scanner;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class A2_TwoWinnerQuestScenarioTest {
+import java.io.ByteArrayInputStream;
+import java.util.*;
+
+public class A2_A1_scenario {
 
     private Game game;
     private Player player1, player2, player3, player4;
 
-    @Given("a new game is started")
-    public void a_new_game_is_started() {
+    @Given("a new game is started with 4 players")
+    public void a_new_game_is_started_with_players() {
         game = new Game();
         game.setupDecks();
         game.initializePlayers();
-    }
+        game.dealCardsToPlayers();
+        game.initializeTurnOrder();
 
-    @And("each player is dealt 12 cards")
-    public void each_player_is_dealt_12_cards() {
+    }
+    @Given("the decks are created")
+    public void the_decks_are_created() {
         game.dealCardsToPlayers();
         player1 = game.getPlayers().get(0);
         player2 = game.getPlayers().get(1);
         player3 = game.getPlayers().get(2);
         player4 = game.getPlayers().get(3);
+
+
     }
 
-    @And("the adventure deck is rigged")
-    public void the_adventure_deck_is_rigged() {
+    @Given("the players' hands are rigged with the specified initial cards")
+    public void the_players_hands_are_rigged_with_the_specified_initial_cards() {
         rigAdventureDeck(game);
-    }
-
-    @And("the event deck is rigged")
-    public void the_event_deck_is_rigged() {
         rigEventDeck(game);
-    }
-
-    @And("the players' hands are rigged")
-    public void the_players_hands_are_rigged() {
         rigPlayersHands(game);
     }
 
+    @When("P1 draws a quest card of 4 stages")
+    public void p1_draws_a_quest_card_of_stages() {
+        game.offerSponsorship(new QuestCard(4), new Scanner(new ByteArrayInputStream("no\nyes\n".getBytes())));
 
-
-    @And("Player 1 is offered sponsorship and accepts")
-    public void player1_is_offered_sponsorship_and_accepts() {
-        game.offerSponsorship(new QuestCard(4), new Scanner(new ByteArrayInputStream("yes\n".getBytes())));
-        Assertions.assertEquals(player1, game.getSponsor(), "Player 1 should be the sponsor.");
     }
 
-    @And("Players 2, 3, and 4 decide to participate")
-    public void players_2_3_and_4_decide_to_participate() {
-        game.sponsorSetsUpQuest(4, new Scanner(new ByteArrayInputStream("2\nquit\n2\nquit\n1\n2\n2\nquit\n1\n1\nquit".getBytes())));
+    @When("P1 declines to sponsor the quest")
+    public void p1_declines_to_sponsor_the_quest() {
+        // Already handled in the previous step by simulating "no" input
+    }
+
+    @When("P2 accepts to sponsor the quest and builds the 4 stages as specified")
+    public void p2_accepts_to_sponsor_the_quest_and_builds_the_stages_as_specified() {
+        Assertions.assertEquals(player2, game.getSponsor(), "Player 2 should be the sponsor.");
+        StringBuilder inputBuilder = new StringBuilder();
+        // Simulate building 4 stages
+        // For simplicity, assuming specific card positions for each stage
+        // Stage 1: F5 (position 1), Horse (position 8)
+        inputBuilder.append("1\n8\nquit\n");
+        // Stage 2: F15 (position 3), Sword (position 7)
+        inputBuilder.append("2\n5\nquit\n");
+        // Stage 3: F15 (position 3), Dagger (position 6), Battle-Axe (position 10)
+        inputBuilder.append("2\n3\n4\nquit\n");
+        // Stage 4: F40 (position 5), Battle-Axe (position 9)
+        inputBuilder.append("2\n3\nquit\n");
+
+        game.sponsorSetsUpQuest(4, new Scanner(new ByteArrayInputStream(inputBuilder.toString().getBytes())));
         game.determineEligibleParticipants();
+
+    }
+
+    @When("Quest 1 begins with P1, P3, and P4 participating")
+    public void stage_begins_with_p_participating() {
         game.promptParticipantsForStage( new Scanner(new ByteArrayInputStream("yes\nyes\nyes".getBytes())));
-        Assertions.assertTrue(game.getEligibleParticipants().contains(player2), "Player 2 should be participating.");
+        Assertions.assertTrue(game.getEligibleParticipants().contains(player1), "Player 1 should be participating.");
         Assertions.assertTrue(game.getEligibleParticipants().contains(player3), "Player 3 should be participating.");
         Assertions.assertTrue(game.getEligibleParticipants().contains(player4), "Player 4 should be participating.");
-    }
-
-    @When("Players 2, 3, and 4 complete the first Quest")
-    public void players_2_3_and_4_complete_the_first_stage() {
-        game.playTurns(new Scanner(new ByteArrayInputStream("5\n5\n5\n7\nquit\n1\nquit\n7\nquit\nyes\nyes\n1\n4\nquit\n2\n5\nquit\nyes\nyes\n6\n3\nquit\n9\n1\nquit\nyes\nyes\n3\nquit\n3\nquit\nyes\nyes".getBytes())));
-    }
-
-    @Then("Players 2 and 4 should have won Quest 1")
-    public void players_2_and_4_should_have_won_stage1() {
-        Assertions.assertTrue(game.getStageParticipants().contains(player2), "Player 2 should have won stage 1.");
-        Assertions.assertTrue(game.getStageParticipants().contains(player4), "Player 4 should have won stage 1.");
-    }
-
-    @Then("Player 3 should have lost Quest 1")
-    public void player3_should_have_lost_stage1() {
-        Assertions.assertFalse(game.getStageParticipants().contains(player3), "Player 3 should have lost stage 1.");
-    }
-
-
-    @Then("Players 2 and 4 should each have 4 shields")
-    public void players_2_and_4_should_each_have_4_shields() {
-        Assertions.assertEquals(4, player2.getShields(), "Player 2 should have 4 shields.");
-        Assertions.assertEquals(4, player4.getShields(), "Player 4 should have 4 shields.");
-        game.endTurn();
+        String input = prepareSimulatedInputs();
+        game.playTurns(new Scanner(new ByteArrayInputStream(input.getBytes())));
 
     }
 
-    @And("Player 2 draws a 3-stage quest and declines to sponsor it")
-    public void player2_draws_a_3_stage_quest_and_declines_to_sponsor_it() {
-        game.offerSponsorship(new QuestCard(4), new Scanner(new ByteArrayInputStream("no\nyes\n".getBytes())));
-        Assertions.assertEquals(player3, game.getSponsor(), "Player 3 should be the sponsor.");
-    }
-    @When("Player 3 decides to sponsor the quest and builds its stages")
-    public void player3_decides_to_sponsor_and_builds_stages() {
-        game.sponsorSetsUpQuest(3, new Scanner(new ByteArrayInputStream("2\nquit\n2\nquit\n1\n2\n5\nquit".getBytes())));
-        game.determineEligibleParticipants();
+    @And("Player 1 and 3 got out in Quest1")
+    public void p1_out() {
+        assertFalse(game.getStageParticipants().contains(player1), "Player 1 should be out");
+        assertFalse(game.getStageParticipants().contains(player3), "Player 3 should be out");
+        assertTrue(game.getStageParticipants().contains(player4), "Player 4 should still be in the game");
+
     }
 
-    @When("Player 1 declines to participate and Players 2 and 4 participate")
-    public void player1_declines_to_participate() {
-        game.promptParticipantsForStage( new Scanner(new ByteArrayInputStream("no\nyes\nyes\n".getBytes())));
-        Assertions.assertFalse(game.getStageParticipants().contains(player1), "Player 1 should not be participating.");
-        Assertions.assertTrue(game.getStageParticipants().contains(player2), "Player 2 should be participating.");
-        Assertions.assertTrue(game.getStageParticipants().contains(player4), "Player 4 should be participating.");
+
+
+    @Then("P3 has 0 shields and P4 has 4 shields")
+    public void p3_and_p4_each_have_shields() {
+        assertEquals(0, player3.getShields(), "P3 should have 0 shields.");
+        assertEquals(4, player4.getShields(), "P4 should have 4 shields.");
     }
 
-    @When("Players 2 and 4 play and win stages 1, 2, and 3")
-    public void players_2_and_4_play_and_win_stages_1_2_and_3() {
-        game.playTurns(new Scanner(new ByteArrayInputStream("1\n3\nquit\n1\nquit\nyes\nyes\n1\n4\nquit\n1\nquit\nyes\nyes\n1\n7\nquit\n1\n8\nquit\nyes\nyes".getBytes())));
-        Assertions.assertTrue(game.getStageParticipants().contains(player2), "Player 2 should have won stage 1.");
-        Assertions.assertTrue(game.getStageParticipants().contains(player4), "Player 4 should have won stage 1.");
-    }
-
-    @Then("Players 2 and 4 should each earn 3 shields")
-    public void players_2_and_4_should_each_earn_3_shields() {
-        Assertions.assertEquals(7, player2.getShields(), "Player 2 should have earned an additional 3 shields.");
-        Assertions.assertEquals(7, player4.getShields(), "Player 4 should have earned an additional 3 shields.");
-    }
-
-    @Then("Players 2 and 4 are declared winners")
-    public void players_2_and_4_are_declared_winners() {
-        Assertions.assertTrue(game.getWinners().contains(player2), "Player 2 should be declared a winner.");
-        Assertions.assertTrue(game.getWinners().contains(player4), "Player 4 should be declared a winner.");
+    @And("P2 has 12 cards in hand")
+    public void p2_12_cards(){
+        assertEquals(12, player2.getHandSize());
     }
 
     private void rigPlayersHands(Game game) {
@@ -162,29 +139,6 @@ public class A2_TwoWinnerQuestScenarioTest {
 
     private String prepareSimulatedInputs() {
         StringBuilder simulatedInput = new StringBuilder();
-
-        simulatedInput.append("2\nquit\n");
-
-        // Stage 2 Setup:
-        // P2 selects F15 (position 2) and Sword +10 (position 5)
-        simulatedInput.append("2\n5\nquit\n");
-
-        // Stage 3 Setup:
-        // P2 selects F15 (position 2 or updated position after previous discards), Dagger +5 (position 6), Battle-Axe +15 (position 10)
-        simulatedInput.append("2\n3\n4\nquit\n");
-
-        // Stage 4 Setup:
-        // P2 selects F40 (position 4 or updated position), Battle-Axe +15 (position 10 or updated position)
-        simulatedInput.append("2\n3\nquit\n");
-
-
-        // Stage 1: Participants decide to join
-        // P1 decides to participate
-        simulatedInput.append("yes\n");
-        // P3 decides to participate
-        simulatedInput.append("yes\n");
-        // P4 decides to participate
-        simulatedInput.append("yes\n");
 
         // P1 discards F5 to trim down to 12 cards
         simulatedInput.append("1\n");
@@ -320,3 +274,4 @@ public class A2_TwoWinnerQuestScenarioTest {
         eventDeck.getCards().add(2, new EventCard("Plague"));
     }
 }
+
