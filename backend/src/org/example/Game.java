@@ -1,7 +1,5 @@
 package org.example;
 
-import io.cucumber.java.an.E;
-
 import java.util.*;
 
 public class Game {
