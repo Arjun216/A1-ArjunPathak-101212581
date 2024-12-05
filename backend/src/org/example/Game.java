@@ -155,6 +155,7 @@ public class Game {
         if (!winners.isEmpty()) {
             displayWinners(winners);
             gameOver = true;
+            shutdown();
         }
     }
 
@@ -980,6 +981,8 @@ public class Game {
 
         eventDeck.getCards().clear();
         eventDeck.getCards().add(0, new QuestCard(2));
+        eventDeck.getCards().add(0, new QuestCard(2));
+
         System.out.println(getEventDeck());
     }
 
@@ -1162,4 +1165,36 @@ public class Game {
         getPlayers().get(2).setHand(new ArrayList<>(p3Hand)); // P3
         getPlayers().get(3).setHand(new ArrayList<>(p4Hand)); // P4
     }
+
+    public void shutdown() {
+        System.out.println("Shutting down the game...");
+        // Mark the game as over to exit any loops
+        if (adventureDeck != null) {
+            adventureDeck.getCards().clear();
+        }
+        if (eventDeck != null) {
+            eventDeck.getCards().clear();
+        }
+        eventDiscardPile.clear();
+        players = new ArrayList<>();
+        currentPlayerIndex = 0;
+        if(gameOver) {
+            gameOver = false;
+        }
+        sponsorshipOffered = false;
+        sponsor = null;
+        eligibleParticipants.clear();
+        stageParticipants.clear();
+        winners.clear();
+        questStages.clear();
+        logs.clear();
+        userInputs.clear();
+        input_string.clear();
+        waitingForInput = false;
+        isRigged = false;
+        instance = null;
+
+        System.out.println("Game shutdown complete.");
+    }
+
 }

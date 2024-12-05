@@ -100,7 +100,7 @@ function fetchPlayersInfo() {
 
 
 
-// Poll for new logs every 2 seconds
+// Poll for new logs every 0.5 seconds
 setInterval(() => {
     if (!isGameOver) {
         fetchLogs();
@@ -111,12 +111,12 @@ setInterval(() => {
                 isGameOver = data;
                 if (isGameOver) {
                     appendLog('Game Over!');
-                    inputField.disabled = true;
-                    sendButton.disabled = true;
+                    //inputField.disabled = true;
+                    //sendButton.disabled = true;
                 }
             });
     }
-}, 2000);
+}, 500);
 function checkWaitingForInput() {
     fetch('http://localhost:8080/api/isWaitingForInput')
         .then(response => response.json())
@@ -125,8 +125,8 @@ function checkWaitingForInput() {
                 inputField.disabled = false;
                 sendButton.disabled = false;
             } else {
-                inputField.disabled = true;
-                sendButton.disabled = true;
+                //inputField.disabled = true;
+                //sendButton.disabled = true;
             }
         });
 }
@@ -143,12 +143,12 @@ setInterval(() => {
                 isGameOver = data;
                 if (isGameOver) {
                     appendLog('Game Over!');
-                    inputField.disabled = true;
-                    sendButton.disabled = true;
+                    //inputField.disabled = true;
+                    //sendButton.disabled = true;
                 }
             });
     }
-}, 2000);
+}, 500);
 
 
 

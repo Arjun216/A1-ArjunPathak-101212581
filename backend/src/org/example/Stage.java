@@ -8,6 +8,10 @@ public class Stage {
     private final List<String> weaponNames = new ArrayList<>();
     private boolean hasFoe = false;
 
+    public List<Card> getCards() {
+        return cards;
+    }
+
     public void addCard(Card card) {
         if (card instanceof FoeCard && !hasFoe) {
             foe = (FoeCard) card;

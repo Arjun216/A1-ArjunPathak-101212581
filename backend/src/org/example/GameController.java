@@ -12,7 +12,7 @@ import java.util.Map;
 @RequestMapping("/api")
 @CrossOrigin(origins = "http://127.0.0.1:8081") // Adjusted origin
 public class GameController {
-    private Game game = Game.getInstance();
+    private Game game;
     private boolean isGameInitialized = false;
     // Add a field to track if the game thread is running
     private Thread gameThread;
@@ -20,6 +20,8 @@ public class GameController {
 
     @GetMapping("/initialize")
     public ResponseEntity<String> initializeGame(){
+        game = Game.getInstance();
+        System.out.println("******"+System.identityHashCode(game));
         game.setupDecks();
         game.initializePlayers();
         game.dealCardsToPlayers();
@@ -172,6 +174,41 @@ public class GameController {
 
         return ResponseEntity.ok(playersInfo);
     }
+
+    @PostMapping("/shutdown")
+    public ResponseEntity<String> shutdownGame() {
+        if (gameThread != null && gameThread.isAlive()) {
+            game.shutdown();
+            try {
+                gameThread.join(); // Wait for the thread to finish
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+        return ResponseEntity.ok("Game has been shut down successfully.");
+    }
+    @GetMapping("/sponsor")
+    public ResponseEntity<String> getSponsor() {
+        Player sponsor = game.getSponsor();
+        return ResponseEntity.ok(sponsor != null ? sponsor.getId() : "No sponsor");
+    }
+
+    @GetMapping("/quest-stages")
+    public ResponseEntity<List<Map<String, Object>>> getQuestStages() {
+        List<Stage> stages = game.getQuestStages();
+        List<Map<String, Object>> stageDetails = new ArrayList<>();
+
+        for (Stage stage : stages) {
+            Map<String, Object> stageInfo = new HashMap<>();
+            stageInfo.put("totalValue", stage.getTotalValue());
+            stageInfo.put("cards", stage.getCards().stream().map(Card::getName).toList());
+            stageDetails.add(stageInfo);
+        }
+
+        return ResponseEntity.ok(stageDetails);
+    }
+
+
 
 
 }

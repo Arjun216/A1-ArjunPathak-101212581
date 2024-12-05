@@ -3,8 +3,12 @@ const { Builder, By, until } = require('selenium-webdriver');
 const fetch = require('node-fetch');
 require('chromedriver');
 const chrome = require('selenium-webdriver/chrome');
+//const inputField = document.getElementById('inputField');
+//const sendButton = document.getElementById('sendButton');
 
 (async function testWithRigging() {
+    //inputField.disabled = false;
+    //sendButton.disabled = false;
     let driver;
     try {
         let options = new chrome.Options();
@@ -32,10 +36,13 @@ const chrome = require('selenium-webdriver/chrome');
         // Simulate inputs
         await simulateUserInputs(driver);
 
-        await driver.sleep(2000000000);
+        await driver.sleep(5000);
 
 
         console.log('Test scenario executed successfully.');
+
+        shutdownGame();
+
     } catch (error) {
         console.error('An error occurred during the test:', error);
     } finally {
@@ -149,16 +156,37 @@ async function simulateUserInputs(driver) {
 
 
     for (let input of inputs) {
-        await waitForGameToBeReady();
+            await waitForGameToBeReady();
 
-        let inputField = await driver.findElement(By.id('inputField'));
-        let sendButton = await driver.findElement(By.id('sendButton'));
+            let inputField = await driver.findElement(By.id('inputField'));
+            let sendButton = await driver.findElement(By.id('sendButton'));
 
-        await inputField.clear();
-        await inputField.sendKeys(input);
-        await sendButton.click();
+            await inputField.clear();
+            await inputField.sendKeys(input);
+            await new Promise(resolve => setTimeout(resolve, 50));
 
-        // Optionally wait for the game to process the input
-        await new Promise(resolve => setTimeout(resolve, 500));
+            await sendButton.click();
+
+            //wait for the game to process the input
+            //await new Promise(resolve => setTimeout(resolve, 300));
+        }
     }
-}
+
+    async function shutdownGame() {
+            const url = "http://localhost:8080/api/shutdown"; // Replace with your actual URL
+            try {
+                const response = await fetch(url, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                });
+
+                if (response.ok) {
+                    console.log("Game shut down successfully.");
+                } else {
+                    console.error("Failed to shut down the game:", response.status);
+                }
+            } catch (error) {
+                console.error("Error sending shutdown request:", error);
+            }
+        }
+

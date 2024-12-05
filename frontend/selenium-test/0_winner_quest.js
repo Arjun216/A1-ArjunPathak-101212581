@@ -3,8 +3,12 @@ const { Builder, By, until } = require('selenium-webdriver');
 const fetch = require('node-fetch');
 require('chromedriver');
 const chrome = require('selenium-webdriver/chrome');
+//const inputField = document.getElementById('inputField');
+//const sendButton = document.getElementById('sendButton');
 
 (async function testWithRigging() {
+    //inputField.disabled = false;
+    //sendButton.disabled = false;
     let driver;
     try {
         let options = new chrome.Options();
@@ -34,10 +38,13 @@ const chrome = require('selenium-webdriver/chrome');
         // Simulate inputs
         await simulateUserInputs(driver);
 
-        await driver.sleep(2000000000);
+        await driver.sleep(5000);
 
 
         console.log('Test scenario executed successfully.');
+
+        shutdownGame();
+
     } catch (error) {
         console.error('An error occurred during the test:', error);
     } finally {
@@ -112,7 +119,7 @@ async function rigPlayerHands() {
         console.error('Response from rigPlayerHands:', text);
         throw new Error('Failed to rig Player Hands.');
     }
-    console.log('Player Hands rigged successfully:', text);
+    console.log('Player Hands rigged successfully:');
 }
 
 async function startGame(driver) {
@@ -143,20 +150,90 @@ async function waitForGameToBeReady() {
 }
 
 async function simulateUserInputs(driver) {
-    const inputs = ['yes', ' 1', ' 2', ' 3', ' 4', ' 5', ' 6', ' quit', ' 1', ' 1', ' 1', ' 1', ' 1', ' 1', ' quit', ' yes', ' yes', ' yes', ' 1', ' 4', ' 3', ' 12', ' quit', ' quit', ' quit', ' 1', ' 1']
+    const inputs = ['yes', ' 1', ' 2', ' 3', ' 4', ' 5', ' 6', ' quit', ' 1', ' 1', ' 1', ' 1', ' 1', ' 1',
+     ' quit', ' yes', ' yes', ' yes', ' 1', ' 4', ' 3', ' 12', ' quit', ' quit', ' quit', ' 1', ' 1']
 
 
-    for (let input of inputs) {
-        await waitForGameToBeReady();
+    for (let index = 0; index < inputs.length; index++) {
+            const input = inputs[index]; // Get the current input
+            await waitForGameToBeReady();
 
-        let inputField = await driver.findElement(By.id('inputField'));
-        let sendButton = await driver.findElement(By.id('sendButton'));
+            let inputField = await driver.findElement(By.id('inputField'));
+            let sendButton = await driver.findElement(By.id('sendButton'));
 
-        await inputField.clear();
-        await inputField.sendKeys(input);
-        await sendButton.click();
+            await inputField.clear();
+            await inputField.sendKeys(input);
+            //await new Promise(resolve => setTimeout(resolve, 700));
 
-        // Optionally wait for the game to process the input
-        await new Promise(resolve => setTimeout(resolve, 500));
+            await sendButton.click();
+
+            //wait for the game to process the input
+            await new Promise(resolve => setTimeout(resolve, 50));
+            if(index === 0) {
+            assertSponsor("P1")
+            }
+            if(index === 14) {
+            const expectedStages = [
+                                     {
+                                       totalValue: 110,
+                                       cards: [ 'F50', 'Dagger', 'Sword', 'Horse', 'Battle-Axe', 'Lance' ]
+                                     },
+                                     {
+                                       totalValue: 130,
+                                       cards: [ 'F70', 'Dagger', 'Sword', 'Horse', 'Battle-Axe', 'Lance' ]
+                                     }
+                                   ];
+            assertQuestStage(expectedStages)
+
+                }
+
+        }
     }
+
+async function shutdownGame() {
+        const url = "http://localhost:8080/api/shutdown"; // Replace with your actual URL
+        try {
+            const response = await fetch(url, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+            });
+
+            if (response.ok) {
+                console.log("Game shut down successfully.");
+            } else {
+                console.error("Failed to shut down the game:", response.status);
+            }
+        } catch (error) {
+            console.error("Error sending shutdown request:", error);
+        }
+    }
+
+async function assertSponsor(expectedSponsorId) {
+        const response = await fetch('http://localhost:8080/api/sponsor');
+        const sponsorId = await response.text();
+        console.assert(sponsorId === expectedSponsorId, "Wrong sponsor")
+    }
+
+async function assertQuestStage(expectedStages) {
+    const response = await fetch('http://localhost:8080/api/quest-stages');
+    const stages = await response.json();
+
+    // Check the number of stages
+    console.assert(stages.length === expectedStages.length, `Expected ${expectedStages.length} stages, but got ${stages.length}`);
+    if (stages.length !== expectedStages.length) {
+        console.error('Quest stages do not match expected stages:', stages);
+        throw new Error('Quest stage assertion failed');
+    }
+
+    // Check individual stage values and cards
+    stages.forEach((stage, index) => {
+        console.assert(stage.totalValue === expectedStages[index].totalValue,
+            `Stage ${index + 1}: Expected total value ${expectedStages[index].totalValue}, but got ${stage.totalValue}`);
+        console.assert(JSON.stringify(stage.cards) === JSON.stringify(expectedStages[index].cards),
+            `Stage ${index + 1}: Expected cards ${JSON.stringify(expectedStages[index].cards)}, but got ${JSON.stringify(stage.cards)}`);
+    });
+
+    console.log('Quest stage assertion successful:', stages);
 }
+
+
