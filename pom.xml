@@ -63,6 +63,7 @@
         </dependency>
     </dependencies>
     <build>
+        <sourceDirectory>${project.basedir}/backend/src</sourceDirectory>
         <plugins>
 
             <plugin>
