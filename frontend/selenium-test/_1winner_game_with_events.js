@@ -140,9 +140,9 @@ async function simulateUserInputs(driver) {
 
         await inputField.clear();
         await inputField.sendKeys(input);
-        await new Promise(resolve => setTimeout(resolve, 50));
+        await new Promise(resolve => setTimeout(resolve, 700));
         await sendButton.click();
-        //await new Promise(resolve => setTimeout(resolve, 300));
+        await new Promise(resolve => setTimeout(resolve, 300));
         await processInputAssertions(index);
     }
 
