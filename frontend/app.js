@@ -1,6 +1,8 @@
+// References to UI elements
 const logDiv = document.getElementById('log');
 const inputField = document.getElementById('inputField');
 const sendButton = document.getElementById('sendButton');
+const startGameButton = document.getElementById('startGameButton');
 
 let isGameOver = false;
 let lastLogLength = 0;
@@ -13,50 +15,37 @@ function appendLog(message) {
     logDiv.scrollTop = logDiv.scrollHeight;
 }
 
-// Function to fetch logs from the backend
+// Fetch logs from the backend and append new ones
 function fetchLogs() {
-fetch('http://127.0.0.1:8080/api/logs')
+    fetch('http://127.0.0.1:8080/api/logs')
         .then(response => response.json())
         .then(data => {
-            // Only append new logs
             const newLogs = data.slice(lastLogLength);
             newLogs.forEach(log => appendLog(log));
             lastLogLength = data.length;
-            console.log(newLogs)
-        });
+            console.log(newLogs);
+        })
+        .catch(error => console.error('Error fetching logs:', error));
 }
 
-// Function to send user input to the backend
+// Send user input to the backend
 function sendUserInput() {
     const userInput = inputField.value.trim();
-    if (userInput === '') {
+    if (!userInput) {
         alert('Please enter a valid input.');
         return;
     }
     inputField.value = '';
+
     fetch('http://localhost:8080/api/input', {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain' },
-        body: userInput
-    })
-    .then(() => {
-        fetchLogs();
-    });
+        body: userInput,
+    }).then(() => fetchLogs())
+      .catch(error => console.error('Error sending input:', error));
 }
 
-
-// Event listener for the send button
-sendButton.addEventListener('click', sendUserInput);
-
-// Start the game when the page loads
-function startGame() {
-    fetch('http://localhost:8080/api/start')
-        .then(response => response.text())
-        .then(data => {
-            appendLog(data);
-            fetchLogs();
-        });
-}
+// Fetch and display player information
 function fetchPlayersInfo() {
     fetch('http://localhost:8080/api/players-info')
         .then(response => response.json())
@@ -68,26 +57,28 @@ function fetchPlayersInfo() {
                 const playerDiv = document.createElement('div');
                 playerDiv.className = 'player';
 
+                // Player ID
                 const playerId = document.createElement('h4');
                 playerId.textContent = `Player: ${player.id}`;
                 playerDiv.appendChild(playerId);
 
+                // Shields
                 const shields = document.createElement('p');
                 shields.textContent = `Shields: ${player.shields}`;
                 playerDiv.appendChild(shields);
 
+                // Cards Header
                 const cardsHeader = document.createElement('p');
                 cardsHeader.textContent = 'Cards:';
                 playerDiv.appendChild(cardsHeader);
 
-                const cardsList = document.createElement('ol'); // Ordered list
-
-                player.cards.forEach((card, index) => {
+                // List of Cards
+                const cardsList = document.createElement('ol');
+                player.cards.forEach(card => {
                     const cardItem = document.createElement('li');
                     cardItem.textContent = `${card.name} (${card.type}, Power: ${card.power})`;
                     cardsList.appendChild(cardItem);
                 });
-
                 playerDiv.appendChild(cardsList);
 
                 playersContainer.appendChild(playerDiv);
@@ -96,101 +87,71 @@ function fetchPlayersInfo() {
         .catch(error => console.error('Error fetching players info:', error));
 }
 
-
-
-
-
-// Poll for new logs every 0.5 seconds
-setInterval(() => {
-    if (!isGameOver) {
-        fetchLogs();
-        // Check if the game is over
-        fetch('http://localhost:8080/api/isGameOver')
-            .then(response => response.json())
-            .then(data => {
-                isGameOver = data;
-                if (isGameOver) {
-                    appendLog('Game Over!');
-                    //inputField.disabled = true;
-                    //sendButton.disabled = true;
-                }
-            });
-    }
-}, 500);
+// Check if the game is waiting for input
 function checkWaitingForInput() {
     fetch('http://localhost:8080/api/isWaitingForInput')
         .then(response => response.json())
         .then(data => {
-            if (data) {
-                inputField.disabled = false;
-                sendButton.disabled = false;
-            } else {
-                //inputField.disabled = true;
-                //sendButton.disabled = true;
-            }
-        });
+            inputField.disabled = !data;
+            sendButton.disabled = !data;
+        })
+        .catch(error => console.error('Error checking waiting input status:', error));
 }
 
-// Modify the interval to check for waitingForInput
-setInterval(() => {
-    if (!isGameOver) {
-        fetchLogs();
-        checkWaitingForInput();
-        // Check if the game is over
-        fetch('http://localhost:8080/api/isGameOver')
-            .then(response => response.json())
-            .then(data => {
-                isGameOver = data;
-                if (isGameOver) {
-                    appendLog('Game Over!');
-                    //inputField.disabled = true;
-                    //sendButton.disabled = true;
-                }
-            });
-    }
-}, 500);
+// Start the game
+function startGame() {
+    fetch('http://localhost:8080/api/start')
+        .then(response => response.text())
+        .then(data => {
+            appendLog(data);
+            fetchLogs();
+        })
+        .catch(error => console.error('Error starting game:', error));
+}
 
+// Initialize the game
+function initializeGame() {
+    return fetch('http://localhost:8080/api/initialize', { method: 'GET' })
+        .then(response => {
+            if (!response.ok) throw new Error("Failed to initialize the game");
+            return response.text();
+        })
+        .then(data => appendLog(data))
+        .catch(error => console.error('Error initializing game:', error));
+}
 
-
-
-setInterval(fetchPlayersInfo, 30); // Update every 3 seconds
-
-// Reference to the Start Game button
-const startGameButton = document.getElementById('startGameButton');
-
-// Event listener for Start Game button
-
+// Check if the game is initialized and start it
 startGameButton.addEventListener('click', () => {
     fetch('http://localhost:8080/api/isGameInitialized')
         .then(response => response.json())
         .then(isInitialized => {
             if (!isInitialized) {
-                initializeGame().then(() => {
-                    startGameButton.disabled = true; // Disable button after starting the game
-                    startGame();
-                }).catch(error => {
-                    appendLog("Error initializing the game: " + error.message);
-                });
+                initializeGame()
+                    .then(() => {
+                        startGameButton.disabled = true; // Disable button after starting
+                        startGame();
+                    })
+                    .catch(error => appendLog("Error initializing the game: " + error.message));
             } else {
-                startGameButton.disabled = true; // Disable button after starting the game
+                startGameButton.disabled = true; // Disable button after starting
                 startGame();
             }
         })
-        .catch(error => {
-            appendLog("Error checking if game is initialized: " + error.message);
-        });
+        .catch(error => appendLog("Error checking if game is initialized: " + error.message));
 });
 
 
-// Function to initialize the game
-function initializeGame() {
-    return fetch('http://localhost:8080/api/initialize', {
-        method: 'GET'
-    }).then(response => {
-        if (!response.ok) {
-            throw new Error("Failed to initialize the game");
-        }
-        return response.text();
-    }).then(data => appendLog(data));
 
-}
+// Check if the game is waiting for input every 0.5 seconds
+setInterval(() => {
+    if (!isGameOver) {
+        fetchLogs();
+        checkWaitingForInput();
+    }
+}, 500);
+
+// Fetch player information every 0.5 seconds
+setInterval(fetchPlayersInfo, 50);
+
+// Event listener for the send button
+sendButton.addEventListener('click', sendUserInput);

@@ -21,16 +21,6 @@ const tests = [
         for (const test of tests) {
             console.log(`Starting test: ${test}`);
 
-            // Refresh backend
-            console.log('Refreshing backend...');
-            await refreshBackend();
-
-            // Refresh frontend
-            console.log('Refreshing web page...');
-            await driver.get('http://127.0.0.1:8081');
-            await driver.wait(until.titleIs('Card Game'), 10000);
-
-            // Execute the test script
             await runTestScript(test);
 
             console.log(`Completed test: ${test}`);
@@ -43,18 +33,6 @@ const tests = [
         }
     }
 })();
-
-async function refreshBackend() {
-    try {
-        const response = await fetch('http://localhost:8080/api/initialize', { method: 'GET' });
-        if (!response.ok) {
-            throw new Error('Failed to refresh backend');
-        }
-        console.log('Backend refreshed successfully.');
-    } catch (error) {
-        console.error('Error refreshing backend:', error);
-    }
-}
 
 function runTestScript(testFile) {
     return new Promise((resolve, reject) => {

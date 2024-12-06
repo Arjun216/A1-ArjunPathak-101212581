@@ -1,4 +1,5 @@
 package org.example;
+
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
@@ -17,11 +18,10 @@ public class GameController {
     // Add a field to track if the game thread is running
     private Thread gameThread;
 
-
     @GetMapping("/initialize")
-    public ResponseEntity<String> initializeGame(){
+    public ResponseEntity<String> initializeGame() {
         game = Game.getInstance();
-        System.out.println("******"+System.identityHashCode(game));
+        System.out.println("******" + System.identityHashCode(game));
         game.setupDecks();
         game.initializePlayers();
         game.dealCardsToPlayers();
@@ -29,26 +29,25 @@ public class GameController {
         isGameInitialized = true;
         return ResponseEntity.ok("Game initialized");
     }
+
     @GetMapping("/isGameInitialized")
     public ResponseEntity<Boolean> isGameInitialized() {
         return ResponseEntity.ok(isGameInitialized);
     }
-
 
     // Modify the startGame method
     @GetMapping("/start")
     public ResponseEntity<String> startGame() {
         if (isGameInitialized) {
 
-
             // Start the game loop in a new thread
             gameThread = new Thread(() -> {
                 while (!game.isGameOver()) {
                     game.playTurn();
-//                    game.checkForWinners();
-//                    if (!game.isGameOver()) {
-//                        game.endTurn();
-//                    }
+                    // game.checkForWinners();
+                    // if (!game.isGameOver()) {
+                    // game.endTurn();
+                    // }
                 }
                 game.addLog("Game Over!");
             });
@@ -58,19 +57,18 @@ public class GameController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Game is already in progress!");
     }
 
-
     // Endpoint to get game logs
     @GetMapping("/logs")
     public ResponseEntity<List<String>> getLogs() {
         List<String> logs = game.getLogs();
         return ResponseEntity.ok(logs);
     }
+
     // Endpoint to check if the game is waiting for input
     @GetMapping("/isWaitingForInput")
     public ResponseEntity<Boolean> isWaitingForInput() {
         return ResponseEntity.ok(game.isWaitingForInput());
     }
-
 
     // Endpoint to send user input
     @PostMapping("/input")
@@ -79,13 +77,11 @@ public class GameController {
         return ResponseEntity.ok("Input received");
     }
 
-
     // Endpoint to check if game is over
     @GetMapping("/isGameOver")
     public ResponseEntity<Boolean> isGameOver() {
         return ResponseEntity.ok(game.isGameOver());
     }
-
 
     @GetMapping("/players-info")
     public ResponseEntity<List<Map<String, Object>>> getPlayersInfo() {
@@ -153,10 +149,15 @@ public class GameController {
 
     @PostMapping("/rig/playerHands")
     public ResponseEntity<List<Map<String, Object>>> rigPlayerHands(@RequestBody Integer winner) {
-        if (winner == 0) { game.rigPlayersHands0(); }
-        else if (winner == 1) { game.rigPlayersHands1(); }
-        else if (winner == 2) { game.rigPlayersHands2(); }
-        else if (winner == 3) { game.rigPlayersHands3(); }
+        if (winner == 0) {
+            game.rigPlayersHands0();
+        } else if (winner == 1) {
+            game.rigPlayersHands1();
+        } else if (winner == 2) {
+            game.rigPlayersHands2();
+        } else if (winner == 3) {
+            game.rigPlayersHands3();
+        }
 
         List<Map<String, Object>> playersInfo = new ArrayList<>();
         for (Player player : game.getPlayers()) {
@@ -177,16 +178,16 @@ public class GameController {
 
     @PostMapping("/shutdown")
     public ResponseEntity<String> shutdownGame() {
-        if (gameThread != null && gameThread.isAlive()) {
-            game.shutdown();
-            try {
-                gameThread.join(); // Wait for the thread to finish
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
+        Game gameInstance = Game.getInstance();
+        if (gameInstance != null) {
+            gameInstance.shutdown();
+            return ResponseEntity.ok("Game has been shut down successfully.");
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No active game instance to shut down.");
         }
-        return ResponseEntity.ok("Game has been shut down successfully.");
     }
+    
+
     @GetMapping("/sponsor")
     public ResponseEntity<String> getSponsor() {
         Player sponsor = game.getSponsor();
@@ -208,7 +209,11 @@ public class GameController {
         return ResponseEntity.ok(stageDetails);
     }
 
-
-
+    @GetMapping("/winners")
+    public ResponseEntity<List<String>> getWinners() {
+        List<Player> winners = game.getWinners();
+        List<String> winnerIds = winners.stream().map(Player::getId).toList();
+        return ResponseEntity.ok(winnerIds);
+    }
 
 }

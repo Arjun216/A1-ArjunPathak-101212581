@@ -155,7 +155,7 @@ public class Game {
         if (!winners.isEmpty()) {
             displayWinners(winners);
             gameOver = true;
-            shutdown();
+            //shutdown();
         }
     }
 
@@ -167,6 +167,7 @@ public class Game {
                 addLog(", ");
             }
         }
+        addLog("");
     }
 
     public EventCard drawEventCard(Player player) {

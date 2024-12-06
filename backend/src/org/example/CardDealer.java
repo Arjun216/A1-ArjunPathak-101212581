@@ -21,7 +21,7 @@ public class CardDealer {
         for (int i = 0; i < 6; i++) adventureCards.add(new WeaponCard("Dagger", 5));
         for (int i = 0; i < 16; i++) adventureCards.add(new WeaponCard("Sword", 10));
         for (int i = 0; i < 12; i++) adventureCards.add(new WeaponCard("Horse", 10));
-        for (int i = 0; i < 8; i++) adventureCards.add(new WeaponCard("Battle-Axes", 15));
+        for (int i = 0; i < 8; i++) adventureCards.add(new WeaponCard("Battle-Axe", 15));
         for (int i = 0; i < 6; i++) adventureCards.add(new WeaponCard("Lance", 20));
         for (int i = 0; i < 2; i++) adventureCards.add(new WeaponCard("Excalibur", 30));
 
