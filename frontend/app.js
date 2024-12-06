@@ -155,3 +155,5 @@ setInterval(fetchPlayersInfo, 50);
 
 // Event listener for the send button
 sendButton.addEventListener('click', sendUserInput);
+
+//npx http-server --cors
